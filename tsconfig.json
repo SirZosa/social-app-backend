@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ESNext", // Target JavaScript version
-    "module": "commonjs", // Module system (Node.js uses CommonJS)
+    "module": "ESNext", // Module system (Node.js uses CommonJS)
     "outDir": "./dist", // Output directory for compiled JavaScript
     "rootDir": "./src", // Root directory of your TypeScript source files
     "strict": true, // Enable strict type checking
@@ -9,7 +9,8 @@
     "skipLibCheck": true, // Skip type checking of declaration files
     "forceConsistentCasingInFileNames": true, // Enforce consistent casing
     "types": ["node"], // Include Node.js type definitions
-    "sourceMap": true // Generate source maps for debugging
+    "sourceMap": true, // Generate source maps for debugging
+    "moduleResolution":"node"
   },
   "include": [
     "src/**/*.ts" // Include all TypeScript files in the src directory
