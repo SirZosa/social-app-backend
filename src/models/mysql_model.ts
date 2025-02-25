@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken'
 import 'dotenv/config'
 import { ConnectionOptions } from 'mysql2/promise'
 import { logInInput, signUpInput, getProfileInput, uploadPostInput, postLikeInput, getFollowersPostsInput, postCommmentInput, getCommentsInput } from './interfaces'
-import { off } from 'process'
 
 const config:ConnectionOptions ={
     host: process.env.DB_HOST,
