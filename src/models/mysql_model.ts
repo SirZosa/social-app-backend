@@ -3,14 +3,15 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import 'dotenv/config'
 import { ConnectionOptions } from 'mysql2/promise'
-import { logInInput, signUpInput, getProfileInput, uploadPostInput, postLikeInput, getFollowersPostsInput, postCommmentInput } from './interfaces'
+import { logInInput, signUpInput, getProfileInput, uploadPostInput, postLikeInput, getFollowersPostsInput, postCommmentInput, getCommentsInput } from './interfaces'
+import { off } from 'process'
 
 const config:ConnectionOptions ={
     host: process.env.DB_HOST,
     port: Number(process.env.DB_PORT),
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_DABASE
+    database: process.env.DB_DATABASE
 }
 
 const JWT_SECRET= process.env.JWT_SECRET ?? "default_secret"
@@ -86,12 +87,12 @@ export class AppModel{
         const {post_id, user_id} = input
         try{
             await connection.query(
-                'INSERT INTO likes (post_id, user_id) VALUES *?, ?)',
+                'INSERT INTO likes (post_id, user_id) VALUES ?, ?)',
                 [post_id, user_id]
             )
         }
         catch(error){
-            return {error: 'Error creating post'}
+            return {error: 'Error liking post'}
         }
     }
 
@@ -104,21 +105,23 @@ export class AppModel{
             )
         }
         catch(error){
-            return {error: 'Error creating post'}
+            return {error: 'Error removing like'}
         }
     }
 
     static async getPosts({input}:{input:number}){
+        const offset = (input-1) * 10
         const posts = await connection.query<mysql.RowDataPacket[]>(
             'SELECT * FROM posts ORDER BY date_created DESC LIMIT ? OFFSET ?',
-            [10, input]
+            [10, offset]
         )
         if(posts[0]) return JSON.parse(JSON.stringify(posts[0]))
         return {error: 'No posts found'}
     }
 
-    static async getFollowersPosts({input}:getFollowersPostsInput){
+    static async getFolloweePosts({input}:getFollowersPostsInput){
         const {user_id, page} = input
+        const offset = (page-1) * 10
         const [posts] = await connection.query<mysql.RowDataPacket[]>(
             `SELECT posts.*, users.username, users.profile_pic_url
              FROM posts
@@ -127,7 +130,7 @@ export class AppModel{
              WHERE followers.follower_id = UUID_TO_BIN(?)
              ORDER BY posts.date_created DESC
              LIMIT ? OFFSET ?`,
-            [user_id, 10, page]
+            [user_id, 10, offset]
         )
         if(posts[0]) return JSON.parse(JSON.stringify(posts[0]))
         return {error: 'No posts found'}
@@ -156,5 +159,21 @@ export class AppModel{
         catch(error){
             return {error: 'Error deleting comment'}
         }
+    }
+
+    static async getComments({input}:getCommentsInput){
+        const {post_id, page} = input
+        const offset = (page-1) * 10
+        const comments = await connection.query<mysql.RowDataPacket[]>(
+            `SELECT comments.*, users.username, users.profile_pic_url
+             FROM comments
+             JOIN users ON comments.user_id = users.user_id
+             WHERE comments.post_id = UUID_TO_BIN(?)
+             ORDER BY comments.date_created DESC
+             LIMIT ? OFFSET ?`,
+            [post_id, 10, offset]
+        )
+        if(comments[0]) return JSON.parse(JSON.stringify(comments[0]))
+        return {error: 'No comments found'}
     }
 }

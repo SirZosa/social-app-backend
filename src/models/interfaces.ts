@@ -51,3 +51,10 @@ export interface postCommmentInput{
         "content":string
     }
 }
+
+export interface getCommentsInput{
+    input:{
+        "post_id":string
+        "page":number
+    }
+}
