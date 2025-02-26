@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import 'dotenv/config'
 import { ConnectionOptions } from 'mysql2/promise'
-import { logInInput, signUpInput, getProfileInput, uploadPostInput, postLikeInput, getFollowersPostsInput, postCommmentInput, getCommentsInput } from './interfaces'
+import { logInInput, signUpInput, getProfileInput, uploadPostInput, postLikeInput, getFollowersPostsInput, postCommmentInput, getCommentsInput, deletePostInput } from './interfaces'
 
 const config:ConnectionOptions ={
     host: process.env.DB_HOST,
@@ -32,7 +32,7 @@ export class AppModel{
         if(!validatePassword){
             return {error: 'Invalid password'}
         }
-        const token = jwt.sign({id:user[0].user_id, email:user[0].email}, JWT_SECRET, {expiresIn:'1h'})
+        const token = jwt.sign({id:user[0].user_id, email:user[0].email}, JWT_SECRET, {expiresIn:'12h'})
         return token
     }
 
@@ -80,6 +80,21 @@ export class AppModel{
         }
         catch(error){
             return {error: 'Error creating post'}
+        }
+    }
+
+    static async deletePost({input}:deletePostInput){
+        const {post_id, user_id} = input
+        const hexString = Buffer.from(user_id.data).toString('hex');
+        try{
+            await connection.query(
+                'DELETE FROM posts WHERE BIN_TO_UUID(post_id) = ? AND user_id = UNHEX(?)',
+                [post_id, hexString]
+            )
+            return {message:'Post deleted'}
+        }
+        catch(error){
+            return {error: 'Error deleting post'}
         }
     }
 
@@ -143,13 +158,16 @@ export class AppModel{
 
     static async postComment({input}:postCommmentInput){
         const {post_id, user_id, content} = input
+        const hexString = Buffer.from(user_id.data).toString('hex');
         try{
             await connection.query(
-                'INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)',
-                [post_id, user_id, content]
+                'INSERT INTO comments (post_id, user_id, content) VALUES (UUID_TO_BIN(?), UNHEX(?), ?)',
+                [post_id, hexString, content]
             )
+            return {message:'Comment created'}
         }
         catch(error){
+            console.log(error)
             return {error: 'Error creating comment'}
         }
     }
@@ -170,7 +188,7 @@ export class AppModel{
         const {post_id, page} = input
         const offset = (page-1) * 10
         const comments = await connection.query<mysql.RowDataPacket[]>(
-            `SELECT comments.*, users.username, users.profile_pic_url
+            `SELECT BIN_TO_UUID(comments.comment_id) comment_id, BIN_TO_UUID(comments.user_id) user_id, BIN_TO_UUID(comments.post_id) post_id, comments.content, users.username, users.profile_pic_url
              FROM comments
              JOIN users ON comments.user_id = users.user_id
              WHERE comments.post_id = UUID_TO_BIN(?)

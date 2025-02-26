@@ -24,9 +24,6 @@ const postSchema = z.object({
 })
 
 const commentSchema = z.object({
-    user_id: z.string({
-        required_error: 'A user is required'
-    }),
     post_id: z.string({
         required_error: 'A post is required'
     }),

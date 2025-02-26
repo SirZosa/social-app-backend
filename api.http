@@ -20,41 +20,75 @@ Content-Type: application/json
 }
 
 ### get profile
-GET http://localhost:3000/v1/profile/8483f988-f3f6-11ef-b44a-d8bbc1ab39d3
+GET http://localhost:3000/v1/profile/fa32ca8b-f47a-11ef-9610-d8bbc1ab39d3
 
 ### post post
-POST http://localhost:3000/v1/uploadpost
+POST http://localhost:3000/v1/post
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzI1MCw1MCwyMDIsMTM5LDI0NCwxMjIsMTcsMjM5LDE1MCwxNiwyMTYsMTg3LDE5MywxNzEsNTcsMjExXX0sImVtYWlsIjoianVhbml0b0BnbWFpbC5jb20iLCJpYXQiOjE3NDA1OTk0NTMsImV4cCI6MTc0MDYwMzA1M30.6egrUSJUacVSbGcHAYsKI0fcYpjTfeIUma70fJVi_nA
+Content-Type: application/json
+
+{
+  "content": "post 13",
+  "media_url": "http://example.com/image.jpg"
+}
+
+### delete post
+DELETE http://localhost:3000/v1/posts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzI1MCw1MCwyMDIsMTM5LDI0NCwxMjIsMTcsMjM5LDE1MCwxNiwyMTYsMTg3LDE5MywxNzEsNTcsMjExXX0sImVtYWlsIjoianVhbml0b0BnbWFpbC5jb20iLCJpYXQiOjE3NDA1OTk0NTMsImV4cCI6MTc0MDYwMzA1M30.6egrUSJUacVSbGcHAYsKI0fcYpjTfeIUma70fJVi_nA
+Content-Type: application/json
+
+{
+  "post_id": "2ed13c1d-f47b-11ef-9610-d8bbc1ab39d3"
+}
+
+### get posts
+GET  http://localhost:3000/v1/posts
+Content-Type: application/json
+
+{
+  "page": 1
+}
+
+### post like
+POST http://localhost:3000/v1/like
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzEzMiwxMzEsMjQ5LDEzNiwyNDMsMjQ2LDE3LDIzOSwxODAsNzQsMjE2LDE4NywxOTMsMTcxLDU3LDIxMV19LCJlbWFpbCI6Imp1YW5pdG9AZ21haWwuY29tIiwiaWF0IjoxNzQwNTkzMDg4LCJleHAiOjE3NDA1OTY2ODh9.yQnusd4mmwO1SphXdDYdL-gLsCM3WMu9J7bR1RxcQjY
 Content-Type: application/json
 
 {
-  "content": "hola mundo",
-  "media_url": "http://example.com/image.jpg"
+  "post_id": "b7c8b880-f46d-11ef-9610-d8bbc1ab39d3"
 }
 
-
-### MAKE AN ORDER
-
-POST http://localhost:3000/v1/cart
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhNDgxMWY2Ni0wMTg1LTExZWYtYWM4Mi1kOGJiYzFhYjM5ZDMiLCJ1c2VyRW1haWwiOiJqdWFuaXRvQGdtYWlsLmNvbSIsImlhdCI6MTcxMzg4NTkwMiwiZXhwIjoxNzEzOTI5MTAyfQ.4NS6yPO0hzzc0tCsjFwU9WAiJZIrTJtPXp2g7JVVZQQ
-
+### remove like
+DELETE  http://localhost:3000/v1/like
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzEzMiwxMzEsMjQ5LDEzNiwyNDMsMjQ2LDE3LDIzOSwxODAsNzQsMjE2LDE4NywxOTMsMTcxLDU3LDIxMV19LCJlbWFpbCI6Imp1YW5pdG9AZ21haWwuY29tIiwiaWF0IjoxNzQwNTkzMDg4LCJleHAiOjE3NDA1OTY2ODh9.yQnusd4mmwO1SphXdDYdL-gLsCM3WMu9J7bR1RxcQjY
 Content-Type: application/json
+
 {
-  "orderId":"9iwefju9f8jifou89u",
-  "productId":"54wgwfewrrgfwwe",
-  "name":"la cosa",
-  "color":"black",
-  "size":"large",
-  "price":50.99,
-  "quantity":3, 
-  "subtotal":152.97, 
-  "img":"ifjwiejwoejfwio.jpg"
+  "post_id": "b7c8b880-f46d-11ef-9610-d8bbc1ab39d3"
+}
+### post comment
+POST http://localhost:3000/v1/comment
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzI1MCw1MCwyMDIsMTM5LDI0NCwxMjIsMTcsMjM5LDE1MCwxNiwyMTYsMTg3LDE5MywxNzEsNTcsMjExXX0sImVtYWlsIjoianVhbml0b0BnbWFpbC5jb20iLCJpYXQiOjE3NDA2MDE4MjgsImV4cCI6MTc0MDY0NTAyOH0.c59EhwK3uxlmY_aoqNk5wpYlcKItl0k7_VEZxM0gpAI
+Content-Type: application/json
+
+{
+  "content": "comment 12",
+  "post_id": "1398e270-f480-11ef-9610-d8bbc1ab39d3"
 }
 
-### get cart
-GET http://localhost:3000/v1/cart
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1NTVlMGNmZS0wMTg4LTExZWYtYWM4Mi1kOGJiYzFhYjM5ZDMiLCJ1c2VyRW1haWwiOiJvbWFyLnNvc2EucXVpbWljYUBnbWFpbC5jb20iLCJpYXQiOjE3MTM4ODcwNTcsImV4cCI6MTcxMzkzMDI1N30.mlb2i0ZiUYLFZH_vg8Rkn6wobebCy70nqlkK8Sc1c00
+###get comment
+GET http://localhost:3000/v1/comment
+Content-Type: application/json
 
-### delete from cart
-DELETE http://localhost:3000/v1/cart/9e8827ad-01a2-11ef-ac82-d8bbc1ab39d3
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1NTVlMGNmZS0wMTg4LTExZWYtYWM4Mi1kOGJiYzFhYjM5ZDMiLCJ1c2VyRW1haWwiOiJvbWFyLnNvc2EucXVpbWljYUBnbWFpbC5jb20iLCJpYXQiOjE3MTM4ODcwNTcsImV4cCI6MTcxMzkzMDI1N30.mlb2i0ZiUYLFZH_vg8Rkn6wobebCy70nqlkK8Sc1c00
+{
+  "page": 1,
+  "post_id": "1398e270-f480-11ef-9610-d8bbc1ab39d3"
+}
+
+###delete comment
+DELETE  http://localhost:3000/v1/comment
+Content-Type: application/json
+
+{
+  "post_id": "1398e270-f480-11ef-9610-d8bbc1ab39d3"
+}

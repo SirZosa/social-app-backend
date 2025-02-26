@@ -3,6 +3,7 @@ export type UserModel={
         signUp:Function,
         getProfile:Function,
         uploadPost:Function,
+        deletePost:Function,
         postLike:Function,
         removeLike:Function,
         getPosts:Function,

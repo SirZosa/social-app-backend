@@ -29,6 +29,13 @@ export interface uploadPostInput{
     }
 }
 
+export interface deletePostInput{
+    input:{
+        "user_id":{"type":"Buffer","data":Array<number>},
+        "post_id":string
+    }
+}
+
 export interface postLikeInput{
     input:{
         "user_id":{"type":"Buffer","data":Array<number>},
@@ -46,7 +53,7 @@ export interface getFollowersPostsInput{
 export interface postCommmentInput{
     input:{
         "post_id":string,
-        "user_id":string,
+        "user_id":{"type":"Buffer","data":Array<number>},
         "content":string
     }
 }

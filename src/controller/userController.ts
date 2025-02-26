@@ -53,11 +53,15 @@ export class UserController{
     uploadPost = async(req:Request, res:Response)=>{
         const result = validatePost(req.body)
         const user_id = req.body.user.id
-        const data = {...result.data, user_id}
+        if(!user_id){
+            res.status(400).json({message:'User id is required'})
+            return
+        }
         if(result.error){
             res.status(400).json(JSON.parse(result.error.message))
             return
         }
+        const data = {...result.data, user_id}
         const post = await this.UserModel.uploadPost({input:data})
         if(post.error){
             res.status(409).json({message:'Error creating post'})
@@ -66,9 +70,37 @@ export class UserController{
         res.status(201).json({message:'Post created'})
     }
 
+    deletePost = async(req:Request, res:Response)=>{
+        const {post_id} = req.body
+        const user_id = req.body.user.id
+        if(!post_id){
+            res.status(400).json({message:'Post id is required'})
+            return
+        }
+        if(!user_id){
+            res.status(400).json({message:'User id is required'})
+            return
+        }
+        const post = await this.UserModel.deletePost({input:{post_id, user_id}})
+        if(post.error){
+            res.status(409).json({message:'Error deleting post'})
+            return
+        }
+        res.status(200).json({message:'Post deleted'})
+    }
+
+
     postLike = async(req:Request, res:Response)=>{
         const {post_id} = req.body
         const user_id = req.body.user.id
+        if(!post_id){
+            res.status(400).json({message:'Post id is required'})
+            return
+        }
+        if(!user_id){
+            res.status(400).json({message:'User id is required'})
+            return
+        }
         const like = await this.UserModel.postLike({input:{post_id, user_id}})
         if(like.error){
             res.status(409).json({message:'Error liking post'})
@@ -80,6 +112,14 @@ export class UserController{
     removeLike = async(req:Request, res:Response)=>{
         const {post_id} = req.body
         const user_id = req.body.user.id
+        if(!post_id){
+            res.status(400).json({message:'Post id is required'})
+            return
+        }
+        if(!user_id){
+            res.status(400).json({message:'User id is required'})
+            return
+        }
         const like = await this.UserModel.removeLike({input:{post_id, user_id}})
         if(like.error){
             res.status(409).json({message:'Error removing like'})
@@ -89,6 +129,10 @@ export class UserController{
     }
 
     getPosts = async(req:Request, res:Response)=>{
+        if(!req.body.page){
+            res.status(400).json({message:'Page is required'})
+            return
+        }
         const posts = await this.UserModel.getPosts({input:req.body.page})
         if(posts.error){
             res.status(404).json({message:'Posts not found'})
@@ -109,11 +153,17 @@ export class UserController{
 
     postComment = async(req:Request, res:Response)=>{
         const result = validateComment(req.body)
+        const user_id = req.body.user.id
+        if(!user_id){
+            res.status(400).json({message:'User id is required'})
+            return
+        }
         if(result.error){
             res.status(400).json(JSON.parse(result.error.message))
             return
         }
-        const comment = await this.UserModel.postComment({input:result.data})
+        const data = {...result.data, user_id}
+        const comment = await this.UserModel.postComment({input:data})
         if(comment.error){
             res.status(409).json({message:'Error creating comment'})
             return
@@ -123,6 +173,15 @@ export class UserController{
 
     deleteComment = async(req:Request, res:Response)=>{
         const {comment_id} = req.body
+        const user_id = req.body.user.id
+        if(!comment_id){
+            res.status(400).json({message:'Comment id is required'})
+            return
+        }
+        if(!user_id){
+            res.status(400).json({message:'User id is required'})
+            return
+        }
         const comment = await this.UserModel.deleteComment({input:{comment_id}})
         if(comment.error){
             res.status(409).json({message:'Error deleting comment'})
@@ -133,6 +192,14 @@ export class UserController{
 
     getComments = async(req:Request, res:Response)=>{
         const {post_id, page} = req.body
+        if(!post_id){
+            res.status(400).json({message:'Post id is required'})
+            return
+        }
+        if(!page){
+            res.status(400).json({message:'Page is required'})
+            return
+        }
         const comments = await this.UserModel.getComments({input:{post_id, page}})
         if(comments.error){
             res.status(404).json({message:'Comments not found'})

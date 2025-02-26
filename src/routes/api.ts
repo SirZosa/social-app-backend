@@ -11,13 +11,14 @@ export const createRouter = ({ UserModel }: { UserModel: UserModel }) => {
     apiRouter.post("/signup", userController.signUp);
     apiRouter.get("/profile/:user_id", userController.getProfile);
     apiRouter.get("/posts", userController.getPosts);
-    apiRouter.get("/followeePosts", authenticate, userController.getFolloweePosts);
-    apiRouter.post("/uploadpost", authenticate, userController.uploadPost);
+    apiRouter.post("/post", authenticate, userController.uploadPost);
+    apiRouter.delete("/posts", authenticate, userController.deletePost);
     apiRouter.post("/like", authenticate, userController.postLike);
     apiRouter.delete("/like", authenticate, userController.removeLike);
+    apiRouter.get("/followeePosts", authenticate, userController.getFolloweePosts);
     apiRouter.post("/comment", authenticate, userController.postComment);
     apiRouter.delete("/comment", authenticate, userController.deleteComment);
-    apiRouter.get("/comments", userController.getComments);
+    apiRouter.get("/comment", userController.getComments);
 
     return apiRouter;
 };
