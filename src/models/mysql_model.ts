@@ -1,7 +1,6 @@
 import mysql from 'mysql2/promise'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { stringify as uuidStringify, parse as uuidParse } from 'uuid';
 import 'dotenv/config'
 import { ConnectionOptions } from 'mysql2/promise'
 import { logInInput, signUpInput, getProfileInput, uploadPostInput, postLikeInput, getFollowersPostsInput, postCommmentInput, getCommentsInput } from './interfaces'
