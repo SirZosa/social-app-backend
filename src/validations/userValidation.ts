@@ -17,12 +17,6 @@ const userSchema = z.object({
 })
 
 const postSchema = z.object({
-    user_id: z.string({
-        required_error: 'A name is required'
-    }).max(20),
-    post_id: z.string({
-        required_error: 'A name is required'
-    }).max(20),
     content: z.string({
         required_error: 'A last name is required'
     }).max(500),
@@ -32,10 +26,10 @@ const postSchema = z.object({
 const commentSchema = z.object({
     user_id: z.string({
         required_error: 'A user is required'
-    }).max(20),
+    }),
     post_id: z.string({
         required_error: 'A post is required'
-    }).max(20),
+    }),
     content: z.string({
         required_error: 'Content is required'
     }).max(500),

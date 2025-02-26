@@ -23,8 +23,7 @@ export interface getProfileInput{
 
 export interface uploadPostInput{
     input:{
-        "post_id":string,
-        "user_id":string,
+        "user_id":{"type":"Buffer","data":Array<number>},
         "content":string,
         "media_url":string
     }

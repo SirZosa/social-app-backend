@@ -1,10 +1,10 @@
 import mysql from 'mysql2/promise'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { stringify as uuidStringify, parse as uuidParse } from 'uuid';
 import 'dotenv/config'
 import { ConnectionOptions } from 'mysql2/promise'
 import { logInInput, signUpInput, getProfileInput, uploadPostInput, postLikeInput, getFollowersPostsInput, postCommmentInput, getCommentsInput } from './interfaces'
-import { Console } from 'console'
 
 const config:ConnectionOptions ={
     host: process.env.DB_HOST,
@@ -62,7 +62,7 @@ export class AppModel{
 
     static async getProfile({input}:getProfileInput){
         const [user] = await connection.query<mysql.RowDataPacket[]>(
-            'SELECT * FROM users WHERE BIN_TO_UUID(user_id) = ?',
+            'SELECT *, BIN_TO_UUID(user_id) id FROM users WHERE BIN_TO_UUID(user_id) = ?',
             [input]
         )
         if(user[0]) return JSON.parse(JSON.stringify(user[0]))
@@ -71,11 +71,13 @@ export class AppModel{
 
     static async uploadPost({input}:uploadPostInput){
         const {user_id, content, media_url} = input
+        const hexString = Buffer.from(user_id.data).toString('hex');
         try{
             await connection.query(
-                'INSERT INTO posts (user_id, content, media_url) VALUES (?, ?, ?)',
-                [user_id, content, media_url]
+                'INSERT INTO posts (user_id, content, media_url) VALUES (UNHEX(?), ?, ?)',
+                [hexString, content, media_url]
             )
+            return {message:'Post created'}
         }
         catch(error){
             return {error: 'Error creating post'}

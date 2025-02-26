@@ -52,11 +52,13 @@ export class UserController{
 
     uploadPost = async(req:Request, res:Response)=>{
         const result = validatePost(req.body)
+        const user_id = req.body.user.id
+        const data = {...result.data, user_id}
         if(result.error){
             res.status(400).json(JSON.parse(result.error.message))
             return
         }
-        const post = await this.UserModel.uploadPost({input:result.data})
+        const post = await this.UserModel.uploadPost({input:data})
         if(post.error){
             res.status(409).json({message:'Error creating post'})
             return
