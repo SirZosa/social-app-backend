@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 import 'dotenv/config'
 import { ConnectionOptions } from 'mysql2/promise'
 import { logInInput, signUpInput, getProfileInput, uploadPostInput, postLikeInput, getFollowersPostsInput, postCommmentInput, getCommentsInput } from './interfaces'
+import { Console } from 'console'
 
 const config:ConnectionOptions ={
     host: process.env.DB_HOST,
@@ -60,10 +61,9 @@ export class AppModel{
     }
 
     static async getProfile({input}:getProfileInput){
-        const {user_id} = input
         const [user] = await connection.query<mysql.RowDataPacket[]>(
-            'SELECT * FROM users WHERE user_id = ?',
-            [user_id]
+            'SELECT * FROM users WHERE BIN_TO_UUID(user_id) = ?',
+            [input]
         )
         if(user[0]) return JSON.parse(JSON.stringify(user[0]))
         return {error: 'User not found'}

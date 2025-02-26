@@ -12,10 +12,12 @@ export class UserController{
         const result = validatePartialUser(req.body)
         if(result.error){
             res.status(400).json(JSON.parse(result.error.message))
+            return
         }
         const isLogged = await this.UserModel.logIn({input:result.data})
         if(!isLogged){
             res.status(401).json({message:'Incorrect user and/or password.'})
+            return
         }
         res.status(200).json(isLogged)
     }
@@ -24,18 +26,26 @@ export class UserController{
         const result = validateUser(req.body)
         if(result.error){
             res.status(400).json(JSON.parse(result.error.message))
+            return
         }
         const userCreated = await this.UserModel.signUp({input:result.data})
         if(userCreated.error){
             res.status(409).json({message:'User already exists'})
+            return
         }
         res.status(201).json(userCreated)
     }
 
     getProfile = async(req:Request, res:Response)=>{
-        const userData = await this.UserModel.getProfile({input:req.body.user})
+        const user_id = req.params.user_id
+        if(!user_id){
+            res.status(400).json({message:'User id is required'})
+            return
+        }
+        const userData = await this.UserModel.getProfile({input:user_id})
         if(userData.error){
             res.status(404).json({message:'User not found'})
+            return
         }
         res.status(200).json(userData)
     }
@@ -44,10 +54,12 @@ export class UserController{
         const result = validatePost(req.body)
         if(result.error){
             res.status(400).json(JSON.parse(result.error.message))
+            return
         }
         const post = await this.UserModel.uploadPost({input:result.data})
         if(post.error){
             res.status(409).json({message:'Error creating post'})
+            return
         }
         res.status(201).json({message:'Post created'})
     }
@@ -57,6 +69,7 @@ export class UserController{
         const like = await this.UserModel.postLike({input:{post_id, user_id}})
         if(like.error){
             res.status(409).json({message:'Error liking post'})
+            return
         }
         res.status(201).json({message:'Post liked'})
     }
@@ -66,6 +79,7 @@ export class UserController{
         const like = await this.UserModel.removeLike({input:{post_id, user_id}})
         if(like.error){
             res.status(409).json({message:'Error removing like'})
+            return
         }
         res.status(200).json({message:'Like removed'})
     }
@@ -74,6 +88,7 @@ export class UserController{
         const posts = await this.UserModel.getPosts({input:req.body.page})
         if(posts.error){
             res.status(404).json({message:'Posts not found'})
+            return
         }
         res.status(200).json(posts)
     }
@@ -83,6 +98,7 @@ export class UserController{
         const posts = await this.UserModel.getFolloweePosts({input:{user_id, page}})
         if(posts.error){
             res.status(404).json({message:'Posts not found'})
+            return
         }
         res.status(200).json(posts)
     }
@@ -91,10 +107,12 @@ export class UserController{
         const result = validateComment(req.body)
         if(result.error){
             res.status(400).json(JSON.parse(result.error.message))
+            return
         }
         const comment = await this.UserModel.postComment({input:result.data})
         if(comment.error){
             res.status(409).json({message:'Error creating comment'})
+            return
         }
         res.status(201).json({message:'Comment created'})
     }
@@ -104,6 +122,7 @@ export class UserController{
         const comment = await this.UserModel.deleteComment({input:{comment_id}})
         if(comment.error){
             res.status(409).json({message:'Error deleting comment'})
+            return
         }
         res.status(200).json({message:'Comment deleted'})
     }
@@ -113,6 +132,7 @@ export class UserController{
         const comments = await this.UserModel.getComments({input:{post_id, page}})
         if(comments.error){
             res.status(404).json({message:'Comments not found'})
+            return
         }
         res.status(200).json(comments)
     }

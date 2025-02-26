@@ -9,7 +9,7 @@ export const createRouter = ({ UserModel }: { UserModel: UserModel }) => {
 
     apiRouter.post("/login", userController.logIn);
     apiRouter.post("/signup", userController.signUp);
-    apiRouter.get("/profile", userController.getProfile);
+    apiRouter.get("/profile/:user_id", userController.getProfile);
     apiRouter.get("/posts", userController.getPosts);
     apiRouter.get("/followeePosts", authenticate, userController.getFolloweePosts);
     apiRouter.post("/uploadpost", authenticate, userController.uploadPost);
