@@ -61,7 +61,7 @@ export class AppModel{
 
     static async getProfile({input}:getProfileInput){
         const [user] = await connection.query<mysql.RowDataPacket[]>(
-            'SELECT *, BIN_TO_UUID(user_id) id FROM users WHERE BIN_TO_UUID(user_id) = ?',
+            'SELECT BIN_TO_UUID(user_id) user_id, first_name, last_name, username, profile_pic_url, profile_background_url, date_created FROM users WHERE BIN_TO_UUID(user_id) = ?',
             [input]
         )
         if(user[0]) return JSON.parse(JSON.stringify(user[0]))
@@ -85,11 +85,13 @@ export class AppModel{
 
     static async postLike({input}:postLikeInput){
         const {post_id, user_id} = input
+        const hexString = Buffer.from(user_id.data).toString('hex');
         try{
             await connection.query(
-                'INSERT INTO likes (post_id, user_id) VALUES ?, ?)',
-                [post_id, user_id]
+                'INSERT INTO likes (post_id, user_id) VALUES (UUID_TO_BIN(?), UNHEX(?))',
+                [post_id, hexString]
             )
+            return {message:'Post liked'}
         }
         catch(error){
             return {error: 'Error liking post'}
@@ -98,13 +100,16 @@ export class AppModel{
 
     static async removeLike({input}:postLikeInput){
         const {post_id, user_id} = input
+        const hexString = Buffer.from(user_id.data).toString('hex');
         try{
             await connection.query(
-                'DELETE FROM likes WHERE post_id = ? AND user_id = ?',
-                [post_id, user_id]
+                'DELETE FROM likes WHERE BIN_TO_UUID(post_id) = ? AND user_id = UNHEX(?)',
+                [post_id, hexString]
             )
+            return {message:'Like removed'}
         }
         catch(error){
+            console.error(error)
             return {error: 'Error removing like'}
         }
     }
@@ -112,7 +117,7 @@ export class AppModel{
     static async getPosts({input}:{input:number}){
         const offset = (input-1) * 10
         const posts = await connection.query<mysql.RowDataPacket[]>(
-            'SELECT * FROM posts ORDER BY date_created DESC LIMIT ? OFFSET ?',
+            'SELECT BIN_TO_UUID(post_id) post_id, BIN_TO_UUID(user_id) user_id, content, media_url, date_created FROM posts ORDER BY date_created DESC LIMIT ? OFFSET ?',
             [10, offset]
         )
         if(posts[0]) return JSON.parse(JSON.stringify(posts[0]))

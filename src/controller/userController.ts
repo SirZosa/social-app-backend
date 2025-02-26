@@ -67,7 +67,8 @@ export class UserController{
     }
 
     postLike = async(req:Request, res:Response)=>{
-        const {post_id, user_id} = req.body
+        const {post_id} = req.body
+        const user_id = req.body.user.id
         const like = await this.UserModel.postLike({input:{post_id, user_id}})
         if(like.error){
             res.status(409).json({message:'Error liking post'})
@@ -77,7 +78,8 @@ export class UserController{
     }
 
     removeLike = async(req:Request, res:Response)=>{
-        const {post_id, user_id} = req.body
+        const {post_id} = req.body
+        const user_id = req.body.user.id
         const like = await this.UserModel.removeLike({input:{post_id, user_id}})
         if(like.error){
             res.status(409).json({message:'Error removing like'})

@@ -31,8 +31,8 @@ export interface uploadPostInput{
 
 export interface postLikeInput{
     input:{
-        "post_id":string,
-        "user_id":string
+        "user_id":{"type":"Buffer","data":Array<number>},
+        "post_id":string
     }
 }
 
