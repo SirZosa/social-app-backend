@@ -133,7 +133,18 @@ export class AppModel{
         const offset = (input-1) * 10
         try{
             const [posts] = await connection.query<mysql.RowDataPacket[]>(
-                'SELECT BIN_TO_UUID(post_id) post_id, BIN_TO_UUID(user_id) user_id, content, media_url, date_created FROM posts ORDER BY date_created DESC LIMIT ? OFFSET ?',
+                `SELECT 
+                BIN_TO_UUID(posts.post_id) post_id, 
+                BIN_TO_UUID(posts.user_id) user_id, 
+                posts.content, 
+                posts.media_url, 
+                posts.date_created,
+                users.username,
+                users.profile_pic_url
+                FROM posts
+                JOIN users ON posts.user_id = users.user_id
+                ORDER BY posts.date_created DESC
+                LIMIT ? OFFSET ?`,
                 [10, offset]
             )
             if(posts) return JSON.parse(JSON.stringify(posts))
