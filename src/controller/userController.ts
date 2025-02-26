@@ -180,7 +180,16 @@ export class UserController{
     }
 
     getFolloweePosts = async(req:Request, res:Response)=>{
-        const {user_id, page} = req.body
+        const {page} = req.body
+        const user_id = req.body.user.id
+        if(!page){
+            res.status(400).json({message:'Page is required'})
+            return
+        }
+        if(!user_id){
+            res.status(400).json({message:'User id is required'})
+            return
+        }
         const posts = await this.UserModel.getFolloweePosts({input:{user_id, page}})
         if(posts.error){
             res.status(404).json({message:'Posts not found'})

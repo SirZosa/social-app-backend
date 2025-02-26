@@ -46,6 +46,15 @@ GET  http://localhost:3000/v1/posts
 Content-Type: application/json
 
 {
+  "page": 2
+}
+
+### get followee posts
+GET  http://localhost:3000/v1/followeePosts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzI1MCw1MCwyMDIsMTM5LDI0NCwxMjIsMTcsMjM5LDE1MCwxNiwyMTYsMTg3LDE5MywxNzEsNTcsMjExXX0sImVtYWlsIjoianVhbml0b0BnbWFpbC5jb20iLCJpYXQiOjE3NDA2MDU0NDIsImV4cCI6MTc0MDY0ODY0Mn0.nCBEb2ranE9pJnPYOBqOk6Pp8FTCwdidVbMo4pFAwps
+Content-Type: application/json
+
+{
   "page": 1
 }
 
@@ -110,3 +119,4 @@ Content-Type: application/json
 {
   "followee_id": "855608e4-f488-11ef-9610-d8bbc1ab39d3"
 }
+

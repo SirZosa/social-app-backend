@@ -43,9 +43,9 @@ export interface postLikeInput{
     }
 }
 
-export interface getFollowersPostsInput{
+export interface getFolloweesPostsInput{
     input:{
-        "user_id":string
+        "user_id":{"type":"Buffer","data":Array<number>},
         "page":number
     }
 }

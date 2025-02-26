@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import 'dotenv/config'
 import { ConnectionOptions } from 'mysql2/promise'
-import { logInInput, signUpInput, getProfileInput, uploadPostInput, postLikeInput, getFollowersPostsInput, postCommmentInput, getCommentsInput, deletePostInput, followInput } from './interfaces'
+import { logInInput, signUpInput, getProfileInput, uploadPostInput, postLikeInput, getFolloweesPostsInput, postCommmentInput, getCommentsInput, deletePostInput, followInput } from './interfaces'
 
 const config:ConnectionOptions ={
     host: process.env.DB_HOST,
@@ -132,11 +132,11 @@ export class AppModel{
     static async getPosts({input}:{input:number}){
         const offset = (input-1) * 10
         try{
-            const posts = await connection.query<mysql.RowDataPacket[]>(
+            const [posts] = await connection.query<mysql.RowDataPacket[]>(
                 'SELECT BIN_TO_UUID(post_id) post_id, BIN_TO_UUID(user_id) user_id, content, media_url, date_created FROM posts ORDER BY date_created DESC LIMIT ? OFFSET ?',
                 [10, offset]
             )
-            if(posts[0]) return JSON.parse(JSON.stringify(posts[0]))
+            if(posts) return JSON.parse(JSON.stringify(posts))
             return {error: 'No posts found'}
         }
         catch(error){
@@ -145,21 +145,28 @@ export class AppModel{
         }
     }
 
-    static async getFolloweePosts({input}:getFollowersPostsInput){
+    static async getFolloweePosts({input}:getFolloweesPostsInput){
         const {user_id, page} = input
         const offset = (page-1) * 10
-        const [posts] = await connection.query<mysql.RowDataPacket[]>(
-            `SELECT posts.*, users.username, users.profile_pic_url
-             FROM posts
-             JOIN followers ON posts.user_id = followers.followee_id
-             JOIN users ON posts.user_id = users.user_id
-             WHERE followers.follower_id = UUID_TO_BIN(?)
-             ORDER BY posts.date_created DESC
-             LIMIT ? OFFSET ?`,
-            [user_id, 10, offset]
-        )
-        if(posts[0]) return JSON.parse(JSON.stringify(posts[0]))
-        return {error: 'No posts found'}
+        const hexString = Buffer.from(user_id.data).toString('hex');
+        try{
+            const [posts] = await connection.query<mysql.RowDataPacket[]>(
+                `SELECT BIN_TO_UUID(posts.post_id) post_id, BIN_TO_UUID(posts.user_id) user_id, posts.content, posts.media_url, posts.date_created, users.username, users.profile_pic_url
+                 FROM posts
+                 JOIN followers ON posts.user_id = followers.followee_id
+                 JOIN users ON posts.user_id = users.user_id
+                 WHERE followers.follower_id = UNHEX(?)
+                 ORDER BY posts.date_created DESC
+                 LIMIT ? OFFSET ?`,
+                [hexString, 10, offset]
+            )
+            if(posts) return JSON.parse(JSON.stringify(posts))
+            return {error: 'No posts found'}
+        }
+        catch(error){
+            console.error(error)
+            return {error: 'Error fetching posts'}
+        }
     }
 
     static async follow({input}:followInput){
