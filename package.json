@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "nodemon --exec node --loader ts-node/esm src/index.ts",
+    "dev": "nodemon --exec node --loader ts-node/esm src/server/mysql.ts",
     "build": "tsc",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write ."

@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { UserController } from "../controller/userController";
-import { authenticate } from "../middlewares/token_validation";
-import type { UserModel } from "../controller/interfaces";
+import { UserController } from "../controller/userController.js";
+import { authenticate } from "../middlewares/token_validation.js";
+import type { UserModel } from "../controller/interfaces.js";
 
 export const createRouter = ({ UserModel }: { UserModel: UserModel }) => {
     const apiRouter = Router();

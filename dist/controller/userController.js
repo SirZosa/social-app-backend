@@ -1,4 +1,4 @@
-import { validatePartialUser, validateUser, validateComment, validatePost } from "../validations/userValidation";
+import { validatePartialUser, validateUser, validateComment, validatePost } from "../validations/userValidation.js";
 export class UserController {
     UserModel;
     constructor({ UserModel: UserModel }) {

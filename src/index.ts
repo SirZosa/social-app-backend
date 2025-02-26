@@ -1,7 +1,7 @@
 import express from "express";
-import { corsMiddleware } from "./middlewares/cors";
-import { createRouter } from "./routes/api";
-import type { UserModel } from "./controller/interfaces";
+import { corsMiddleware } from "./middlewares/cors.js";
+import { createRouter } from "./routes/api.js";
+import type { UserModel } from "./controller/interfaces.js";
 
 export const createApp = ({UserModel}:{UserModel:UserModel}) => {
     const app = express()

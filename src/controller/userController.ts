@@ -1,5 +1,5 @@
-import { UserModel } from "./interfaces"
-import { validatePartialUser, validateUser, validateComment, validatePost } from "../validations/userValidation"
+import { UserModel } from "./interfaces.js"
+import { validatePartialUser, validateUser, validateComment, validatePost } from "../validations/userValidation.js"
 import { Request, Response } from "express"
 
 export class UserController{

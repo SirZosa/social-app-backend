@@ -1,6 +1,6 @@
 import express from "express";
-import { corsMiddleware } from "./middlewares/cors";
-import { createRouter } from "./routes/api";
+import { corsMiddleware } from "./middlewares/cors.js";
+import { createRouter } from "./routes/api.js";
 export const createApp = ({ UserModel }) => {
     const app = express();
     const PORT = process.env.PORT ?? 3000;
