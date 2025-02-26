@@ -255,4 +255,61 @@ export class UserController{
         res.status(200).json(comments)
     }
 
+    savePost = async(req:Request, res:Response)=>{
+        const {post_id} = req.body
+        const user_id = req.body.user.id
+        if(!post_id){
+            res.status(400).json({message:'Post id is required'})
+            return
+        }
+        if(!user_id){
+            res.status(400).json({message:'User id is required'})
+            return
+        }
+        const save = await this.UserModel.savePost({input:{post_id, user_id}})
+        if(save.error){
+            res.status(409).json({message:'Error saving post'})
+            return
+        }
+        res.status(201).json({message:'Post saved'})
+    }
+
+    unsavePost = async(req:Request, res:Response)=>{
+        const {post_id} = req.body
+        const user_id = req.body.user.id
+        if(!post_id){
+            res.status(400).json({message:'Post id is required'})
+            return
+        }
+        if(!user_id){
+            res.status(400).json({message:'User id is required'})
+            return
+        }
+        const unsave = await this.UserModel.unsavePost({input:{post_id, user_id}})
+        if(unsave.error){
+            res.status(409).json({message:'Error unsaving post'})
+            return
+        }
+        res.status(201).json({message:'Post unsaved'})
+    }
+
+    getSavedPosts = async(req:Request, res:Response)=>{
+        const {page} = req.body
+        const user_id = req.body.user.id
+        if(!page){
+            res.status(400).json({message:'Page is required'})
+            return
+        }
+        if(!user_id){
+            res.status(400).json({message:'User id is required'})
+            return
+        }
+        const posts = await this.UserModel.getSavedPosts({input:user_id, page})
+        if(posts.error){
+            res.status(404).json({message:'Posts not found'})
+            return
+        }
+        res.status(200).json(posts)
+    }
+
 }

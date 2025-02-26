@@ -71,3 +71,17 @@ export interface followInput{
         "followee_id":string
     }
 }
+
+export interface savePostInput{
+    input:{
+        "user_id":{"type":"Buffer","data":Array<number>},
+        "post_id":string
+    }
+}
+
+export interface getSavedPostsInput{
+    input:{
+        "user_id":{"type":"Buffer","data":Array<number>},
+        "page":number
+    }
+}

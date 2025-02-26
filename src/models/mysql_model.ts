@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import 'dotenv/config'
 import { ConnectionOptions } from 'mysql2/promise'
-import { logInInput, signUpInput, getProfileInput, uploadPostInput, postLikeInput, getFolloweesPostsInput, postCommmentInput, getCommentsInput, deletePostInput, followInput } from './interfaces'
+import { logInInput, signUpInput, getProfileInput, uploadPostInput, postLikeInput, getFolloweesPostsInput, postCommmentInput, getCommentsInput, deletePostInput, followInput, savePostInput, getSavedPostsInput } from './interfaces'
 
 const config:ConnectionOptions ={
     host: process.env.DB_HOST,
@@ -254,5 +254,61 @@ export class AppModel{
         )
         if(comments[0]) return JSON.parse(JSON.stringify(comments[0]))
         return {error: 'No comments found'}
+    }
+
+    static async savePost({input}:savePostInput){
+        const {post_id, user_id} = input
+        const hexString = Buffer.from(user_id.data).toString('hex');
+        try{
+            await connection.query(
+                'INSERT INTO saved_posts (post_id, user_id) VALUES (UUID_TO_BIN(?), UNHEX(?))',
+                [post_id, hexString]
+            )
+            return {message:'Post saved'}
+        }
+        catch(error){
+            console.error(error)
+            return {error: 'Error saving post'}
+        }
+    }
+
+    static async unsavePost({input}:savePostInput){
+        const {post_id, user_id} = input
+        const hexString = Buffer.from(user_id.data).toString('hex');
+        try{
+            await connection.query(
+                'DELETE FROM saved_posts WHERE post_id = UUID_TO_BIN(?) AND user_id = UNHEX(?)',
+                [post_id, hexString]
+            )
+            return {message:'Post unsaved'}
+        }
+        catch(error){
+            console.error(error)
+            return {error: 'Error unsaving post'}
+        }
+    }
+
+    static async getSavedPosts({input}:getSavedPostsInput){
+        const {user_id, page} = input
+        const offset = (page-1) * 10
+        const hexString = Buffer.from(user_id.data).toString('hex');
+        try{
+            const [posts] = await connection.query<mysql.RowDataPacket[]>(
+                `SELECT BIN_TO_UUID(saved_posts.post_id) post_id, BIN_TO_UUID(posts.user_id) user_id, posts.content, posts.media_url, posts.date_created, users.username, users.profile_pic_url
+                 FROM saved_posts
+                 JOIN posts ON saved_posts.post_id = posts.post_id
+                 JOIN users ON posts.user_id = users.user_id
+                 WHERE saved_posts.user_id = UNHEX(?)
+                 ORDER BY posts.date_created DESC
+                 LIMIT ? OFFSET ?`,
+                 [hexString, 10, offset]
+            )
+            if(posts) return JSON.parse(JSON.stringify(posts))
+            return {error: 'No saved posts found'}
+        }
+        catch(error){
+            console.error(error)
+            return {error: 'Error fetching saved posts'}
+        }
     }
 }
