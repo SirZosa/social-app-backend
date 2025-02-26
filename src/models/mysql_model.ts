@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import 'dotenv/config'
 import { ConnectionOptions } from 'mysql2/promise'
-import { logInInput, signUpInput, getProfileInput, uploadPostInput, postLikeInput, getFollowersPostsInput, postCommmentInput, getCommentsInput, deletePostInput } from './interfaces'
+import { logInInput, signUpInput, getProfileInput, uploadPostInput, postLikeInput, getFollowersPostsInput, postCommmentInput, getCommentsInput, deletePostInput, followInput } from './interfaces'
 
 const config:ConnectionOptions ={
     host: process.env.DB_HOST,
@@ -131,12 +131,18 @@ export class AppModel{
 
     static async getPosts({input}:{input:number}){
         const offset = (input-1) * 10
-        const posts = await connection.query<mysql.RowDataPacket[]>(
-            'SELECT BIN_TO_UUID(post_id) post_id, BIN_TO_UUID(user_id) user_id, content, media_url, date_created FROM posts ORDER BY date_created DESC LIMIT ? OFFSET ?',
-            [10, offset]
-        )
-        if(posts[0]) return JSON.parse(JSON.stringify(posts[0]))
-        return {error: 'No posts found'}
+        try{
+            const posts = await connection.query<mysql.RowDataPacket[]>(
+                'SELECT BIN_TO_UUID(post_id) post_id, BIN_TO_UUID(user_id) user_id, content, media_url, date_created FROM posts ORDER BY date_created DESC LIMIT ? OFFSET ?',
+                [10, offset]
+            )
+            if(posts[0]) return JSON.parse(JSON.stringify(posts[0]))
+            return {error: 'No posts found'}
+        }
+        catch(error){
+            console.error(error)
+            return {error: 'Error fetching posts'}
+        }
     }
 
     static async getFolloweePosts({input}:getFollowersPostsInput){
@@ -154,6 +160,38 @@ export class AppModel{
         )
         if(posts[0]) return JSON.parse(JSON.stringify(posts[0]))
         return {error: 'No posts found'}
+    }
+
+    static async follow({input}:followInput){
+        const {followee_id, user_id} = input
+        const hexString = Buffer.from(user_id.data).toString('hex');
+        try{
+            await connection.query(
+                'INSERT INTO followers (follower_id, followee_id) VALUES (UNHEX(?), UUID_TO_BIN(?))',
+                [hexString, followee_id]
+            )
+            return {message:'User followed'}
+        }
+        catch(error){
+            console.error(error)
+            return {error: 'Error following user'}
+        }
+    }
+
+    static async unfollow({input}:followInput){
+        const {followee_id, user_id} = input
+        const hexString = Buffer.from(user_id.data).toString('hex');
+        try{
+            await connection.query(
+                'DELETE FROM followers WHERE follower_id = UNHEX(?) AND followee_id = UUID_TO_BIN(?)',
+                [hexString, followee_id]
+            )
+            return {message:'User unfollowed'}
+        }
+        catch(error){
+            console.error(error)
+            return {error: 'Error unfollowing user'}
+        }
     }
 
     static async postComment({input}:postCommmentInput){

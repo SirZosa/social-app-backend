@@ -3,11 +3,11 @@ POST http://localhost:3000/v1/signUp
 Content-Type: application/json
 
 {
-  "name":"juanito",
-  "lastname":"perez",
-  "username":"xXjuanitoXx",
+  "name":"omars",
+  "lastname":"jiji",
+  "username":"sirSosa",
   "password": "micontraseña",
-  "email": "juanito@gmail.com"
+  "email": "omar@gmail.com"
 }
 
 ### LogIn
@@ -24,11 +24,11 @@ GET http://localhost:3000/v1/profile/fa32ca8b-f47a-11ef-9610-d8bbc1ab39d3
 
 ### post post
 POST http://localhost:3000/v1/post
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzI1MCw1MCwyMDIsMTM5LDI0NCwxMjIsMTcsMjM5LDE1MCwxNiwyMTYsMTg3LDE5MywxNzEsNTcsMjExXX0sImVtYWlsIjoianVhbml0b0BnbWFpbC5jb20iLCJpYXQiOjE3NDA1OTk0NTMsImV4cCI6MTc0MDYwMzA1M30.6egrUSJUacVSbGcHAYsKI0fcYpjTfeIUma70fJVi_nA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzEzMyw4Niw4LDIyOCwyNDQsMTM2LDE3LDIzOSwxNTAsMTYsMjE2LDE4NywxOTMsMTcxLDU3LDIxMV19LCJlbWFpbCI6Im9tYXJAZ21haWwuY29tIiwiaWF0IjoxNzQwNjA1MjY4LCJleHAiOjE3NDA2NDg0Njh9.eteITPlRPln1gc0Zp2K6gGPMkNSVR6AlSnmEsqaBRUQ
 Content-Type: application/json
 
 {
-  "content": "post 13",
+  "content": "omar post 11",
   "media_url": "http://example.com/image.jpg"
 }
 
@@ -91,4 +91,22 @@ Content-Type: application/json
 
 {
   "post_id": "1398e270-f480-11ef-9610-d8bbc1ab39d3"
+}
+
+### follow user
+POST http://localhost:3000/v1/follow
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzI1MCw1MCwyMDIsMTM5LDI0NCwxMjIsMTcsMjM5LDE1MCwxNiwyMTYsMTg3LDE5MywxNzEsNTcsMjExXX0sImVtYWlsIjoianVhbml0b0BnbWFpbC5jb20iLCJpYXQiOjE3NDA2MDU0NDIsImV4cCI6MTc0MDY0ODY0Mn0.nCBEb2ranE9pJnPYOBqOk6Pp8FTCwdidVbMo4pFAwps
+Content-Type: application/json
+
+{
+  "followee_id": "855608e4-f488-11ef-9610-d8bbc1ab39d3"
+}
+
+### unfollow user
+DELETE  http://localhost:3000/v1/follow
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzI1MCw1MCwyMDIsMTM5LDI0NCwxMjIsMTcsMjM5LDE1MCwxNiwyMTYsMTg3LDE5MywxNzEsNTcsMjExXX0sImVtYWlsIjoianVhbml0b0BnbWFpbC5jb20iLCJpYXQiOjE3NDA2MDU0NDIsImV4cCI6MTc0MDY0ODY0Mn0.nCBEb2ranE9pJnPYOBqOk6Pp8FTCwdidVbMo4pFAwps
+Content-Type: application/json
+
+{
+  "followee_id": "855608e4-f488-11ef-9610-d8bbc1ab39d3"
 }

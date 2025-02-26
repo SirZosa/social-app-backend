@@ -19,6 +19,8 @@ export const createRouter = ({ UserModel }: { UserModel: UserModel }) => {
     apiRouter.post("/comment", authenticate, userController.postComment);
     apiRouter.delete("/comment", authenticate, userController.deleteComment);
     apiRouter.get("/comment", userController.getComments);
+    apiRouter.post("/follow", authenticate, userController.follow);
+    apiRouter.delete("/follow", authenticate, userController.unfollow);
 
     return apiRouter;
 };

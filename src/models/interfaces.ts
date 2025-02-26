@@ -64,3 +64,10 @@ export interface getCommentsInput{
         "page":number
     }
 }
+
+export interface followInput{
+    input:{
+        "user_id":{"type":"Buffer","data":Array<number>},
+        "followee_id":string
+    }
+}

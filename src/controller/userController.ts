@@ -141,6 +141,44 @@ export class UserController{
         res.status(200).json(posts)
     }
 
+    follow = async(req:Request, res:Response)=>{
+        const {followee_id} = req.body
+        const user_id = req.body.user.id
+        if(!followee_id){
+            res.status(400).json({message:'Followee id is required'})
+            return
+        }
+        if(!user_id){
+            res.status(400).json({message:'User id is required'})
+            return
+        }
+        const follow = await this.UserModel.follow({input:{followee_id, user_id}})
+        if(follow.error){
+            res.status(409).json({message:'Error following user'})
+            return
+        }
+        res.status(201).json({message:'User followed'})
+    }
+
+    unfollow = async(req:Request, res:Response)=>{
+        const {followee_id} = req.body
+        const user_id = req.body.user.id
+        if(!followee_id){
+            res.status(400).json({message:'Followee id is required'})
+            return
+        }
+        if(!user_id){
+            res.status(400).json({message:'User id is required'})
+            return
+        }
+        const unfollow = await this.UserModel.unfollow({input:{followee_id, user_id}})
+        if(unfollow.error){
+            res.status(409).json({message:'Error following user'})
+            return
+        }
+        res.status(201).json({message:'User unfollowed'})
+    }
+
     getFolloweePosts = async(req:Request, res:Response)=>{
         const {user_id, page} = req.body
         const posts = await this.UserModel.getFolloweePosts({input:{user_id, page}})

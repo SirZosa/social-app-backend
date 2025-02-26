@@ -11,4 +11,6 @@ export type UserModel={
         postComment:Function,
         deleteComment:Function,
         getComments:Function,
+        follow:Function,
+        unfollow:Function,
 }
