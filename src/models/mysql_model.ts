@@ -263,14 +263,17 @@ export class AppModel{
         }
     }
 
-    static async deleteComment({input}:{input:string}){
+    static async deleteComment({input}:{input:{comment_id:string}}){
+        const {comment_id} = input
         try{
             await connection.query(
-                'DELETE FROM comments WHERE comment_id = ?',
-                [input]
+                'DELETE FROM comments WHERE BIN_TO_UUID(comment_id) = ?',
+                [comment_id]
             )
+            return {message:'Comment deleted'}
         }
         catch(error){
+            console.log(error)
             return {error: 'Error deleting comment'}
         }
     }
