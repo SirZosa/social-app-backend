@@ -29,8 +29,9 @@ export class AppModel{
             return {error: 'User not found'}
         }
         const validatePassword = await bcrypt.compare(password, user[0].password_hash)
-        if(!validatePassword){
-            return {error: 'Invalid password'}
+        console.log(validatePassword)
+        if(validatePassword == false){
+            return validatePassword
         }
         const token = jwt.sign({id:user[0].user_id, email:user[0].email}, JWT_SECRET, {expiresIn:'12h'})
         return token
