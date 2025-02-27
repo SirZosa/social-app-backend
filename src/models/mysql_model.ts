@@ -29,7 +29,6 @@ export class AppModel{
             return {error: 'User not found'}
         }
         const validatePassword = await bcrypt.compare(password, user[0].password_hash)
-        console.log(validatePassword)
         if(validatePassword == false){
             return validatePassword
         }

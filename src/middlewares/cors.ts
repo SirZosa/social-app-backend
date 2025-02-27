@@ -1,22 +1,28 @@
-import cors from 'cors'
-const ACCEPTED_ORIGINS = [
-    'http://localhost:8080',
-    'http://localhost:3000',
-    'http://localhost:5173',
-    'http://localhost:5175',
-    'https://omars-commerce.netlify.app'
-  ]
+import cors from 'cors';
 
-export const corsMiddleware = ({acceptedOrigins = ACCEPTED_ORIGINS} = {}) => cors({
+const ACCEPTED_ORIGINS = [
+  'http://localhost:8080',
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://localhost:5175',
+  'https://omars-commerce.netlify.app',
+];
+
+export const corsMiddleware = ({ acceptedOrigins = ACCEPTED_ORIGINS } = {}) =>
+  cors({
     origin: (origin, callback) => {
-  
-        if (!origin) {
-          return callback(null, true)
-        }
-        
-        if (ACCEPTED_ORIGINS.includes(origin)) {
-            return callback(null, true)
-        }
-      return callback(new Error('Not allowed by CORS'))
-    }
-  })
+      // Allow requests with no origin (e.g., mobile apps, curl requests)
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      // Check if the origin is in the accepted list
+      if (acceptedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // Reject requests from disallowed origins
+      return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+  });

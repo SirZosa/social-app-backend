@@ -3,11 +3,11 @@ POST http://localhost:3000/v1/signUp
 Content-Type: application/json
 
 {
-  "name":"omars",
-  "lastname":"jiji",
-  "username":"sirSosa",
+  "name":"juan",
+  "lastname":"jijojijo",
+  "username":"xXjuanitoXx",
   "password": "micontraseña",
-  "email": "omar@gmail.com"
+  "email": "juanito@gmail.com"
 }
 
 ### LogIn
@@ -24,21 +24,21 @@ GET http://localhost:3000/v1/profile/fa32ca8b-f47a-11ef-9610-d8bbc1ab39d3
 
 ### post post
 POST http://localhost:3000/v1/post
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzEzMyw4Niw4LDIyOCwyNDQsMTM2LDE3LDIzOSwxNTAsMTYsMjE2LDE4NywxOTMsMTcxLDU3LDIxMV19LCJlbWFpbCI6Im9tYXJAZ21haWwuY29tIiwiaWF0IjoxNzQwNjA1MjY4LCJleHAiOjE3NDA2NDg0Njh9.eteITPlRPln1gc0Zp2K6gGPMkNSVR6AlSnmEsqaBRUQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzcsOTYsMTM3LDI1MCwyNDQsMTY4LDE3LDIzOSwxNTAsMTYsMjE2LDE4NywxOTMsMTcxLDU3LDIxMV19LCJlbWFpbCI6Im9tYXJAZ21haWwuY29tIiwiaWF0IjoxNzQwNjE4ODE1LCJleHAiOjE3NDA2NjIwMTV9.CDtLFhVzSD1EzEBsG1pfA-64NWh7Lf9pIbP4s4-QQdY
 Content-Type: application/json
 
 {
-  "content": "omar post 11",
+  "content": "omar post 10",
   "media_url": "http://example.com/image.jpg"
 }
 
 ### delete post
 DELETE http://localhost:3000/v1/posts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzI1MCw1MCwyMDIsMTM5LDI0NCwxMjIsMTcsMjM5LDE1MCwxNiwyMTYsMTg3LDE5MywxNzEsNTcsMjExXX0sImVtYWlsIjoianVhbml0b0BnbWFpbC5jb20iLCJpYXQiOjE3NDA1OTk0NTMsImV4cCI6MTc0MDYwMzA1M30.6egrUSJUacVSbGcHAYsKI0fcYpjTfeIUma70fJVi_nA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzcsOTYsMTM3LDI1MCwyNDQsMTY4LDE3LDIzOSwxNTAsMTYsMjE2LDE4NywxOTMsMTcxLDU3LDIxMV19LCJlbWFpbCI6Im9tYXJAZ21haWwuY29tIiwiaWF0IjoxNzQwNjE4ODE1LCJleHAiOjE3NDA2NjIwMTV9.CDtLFhVzSD1EzEBsG1pfA-64NWh7Lf9pIbP4s4-QQdY
 Content-Type: application/json
 
 {
-  "post_id": "2ed13c1d-f47b-11ef-9610-d8bbc1ab39d3"
+  "post_id": "3cc8c4eb-f4a8-11ef-9610-d8bbc1ab39d3"
 }
 
 ### get posts
@@ -46,7 +46,7 @@ GET  http://localhost:3000/v1/posts
 Content-Type: application/json
 
 {
-  "page": 2
+  "page": 1
 }
 
 ### get followee posts
@@ -60,29 +60,29 @@ Content-Type: application/json
 
 ### post like
 POST http://localhost:3000/v1/like
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzEzMiwxMzEsMjQ5LDEzNiwyNDMsMjQ2LDE3LDIzOSwxODAsNzQsMjE2LDE4NywxOTMsMTcxLDU3LDIxMV19LCJlbWFpbCI6Imp1YW5pdG9AZ21haWwuY29tIiwiaWF0IjoxNzQwNTkzMDg4LCJleHAiOjE3NDA1OTY2ODh9.yQnusd4mmwO1SphXdDYdL-gLsCM3WMu9J7bR1RxcQjY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzcsOTYsMTM3LDI1MCwyNDQsMTY4LDE3LDIzOSwxNTAsMTYsMjE2LDE4NywxOTMsMTcxLDU3LDIxMV19LCJlbWFpbCI6Im9tYXJAZ21haWwuY29tIiwiaWF0IjoxNzQwNjE4ODE1LCJleHAiOjE3NDA2NjIwMTV9.CDtLFhVzSD1EzEBsG1pfA-64NWh7Lf9pIbP4s4-QQdY
 Content-Type: application/json
 
 {
-  "post_id": "b7c8b880-f46d-11ef-9610-d8bbc1ab39d3"
+  "post_id": "35ed3515-f4a8-11ef-9610-d8bbc1ab39d3"
 }
 
 ### remove like
 DELETE  http://localhost:3000/v1/like
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzEzMiwxMzEsMjQ5LDEzNiwyNDMsMjQ2LDE3LDIzOSwxODAsNzQsMjE2LDE4NywxOTMsMTcxLDU3LDIxMV19LCJlbWFpbCI6Imp1YW5pdG9AZ21haWwuY29tIiwiaWF0IjoxNzQwNTkzMDg4LCJleHAiOjE3NDA1OTY2ODh9.yQnusd4mmwO1SphXdDYdL-gLsCM3WMu9J7bR1RxcQjY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzcsOTYsMTM3LDI1MCwyNDQsMTY4LDE3LDIzOSwxNTAsMTYsMjE2LDE4NywxOTMsMTcxLDU3LDIxMV19LCJlbWFpbCI6Im9tYXJAZ21haWwuY29tIiwiaWF0IjoxNzQwNjE4ODE1LCJleHAiOjE3NDA2NjIwMTV9.CDtLFhVzSD1EzEBsG1pfA-64NWh7Lf9pIbP4s4-QQdY
 Content-Type: application/json
 
 {
-  "post_id": "b7c8b880-f46d-11ef-9610-d8bbc1ab39d3"
+  "post_id": "35ed3515-f4a8-11ef-9610-d8bbc1ab39d3"
 }
 ### post comment
 POST http://localhost:3000/v1/comment
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzI1MCw1MCwyMDIsMTM5LDI0NCwxMjIsMTcsMjM5LDE1MCwxNiwyMTYsMTg3LDE5MywxNzEsNTcsMjExXX0sImVtYWlsIjoianVhbml0b0BnbWFpbC5jb20iLCJpYXQiOjE3NDA2MDE4MjgsImV4cCI6MTc0MDY0NTAyOH0.c59EhwK3uxlmY_aoqNk5wpYlcKItl0k7_VEZxM0gpAI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzcsOTYsMTM3LDI1MCwyNDQsMTY4LDE3LDIzOSwxNTAsMTYsMjE2LDE4NywxOTMsMTcxLDU3LDIxMV19LCJlbWFpbCI6Im9tYXJAZ21haWwuY29tIiwiaWF0IjoxNzQwNjE4ODE1LCJleHAiOjE3NDA2NjIwMTV9.CDtLFhVzSD1EzEBsG1pfA-64NWh7Lf9pIbP4s4-QQdY
 Content-Type: application/json
 
 {
-  "content": "comment 12",
-  "post_id": "1398e270-f480-11ef-9610-d8bbc1ab39d3"
+  "content": "comment 7",
+  "post_id": "35ed3515-f4a8-11ef-9610-d8bbc1ab39d3"
 }
 
 ###get comment
@@ -91,32 +91,65 @@ Content-Type: application/json
 
 {
   "page": 1,
-  "post_id": "1398e270-f480-11ef-9610-d8bbc1ab39d3"
+  "post_id": "35ed3515-f4a8-11ef-9610-d8bbc1ab39d3"
 }
 
 ###delete comment
 DELETE  http://localhost:3000/v1/comment
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzcsOTYsMTM3LDI1MCwyNDQsMTY4LDE3LDIzOSwxNTAsMTYsMjE2LDE4NywxOTMsMTcxLDU3LDIxMV19LCJlbWFpbCI6Im9tYXJAZ21haWwuY29tIiwiaWF0IjoxNzQwNjE4ODE1LCJleHAiOjE3NDA2NjIwMTV9.CDtLFhVzSD1EzEBsG1pfA-64NWh7Lf9pIbP4s4-QQdY
 Content-Type: application/json
 
 {
-  "post_id": "1398e270-f480-11ef-9610-d8bbc1ab39d3"
+  "comment_id": "c4512b54-f4b2-11ef-9610-d8bbc1ab39d3"
 }
 
 ### follow user
 POST http://localhost:3000/v1/follow
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzI1MCw1MCwyMDIsMTM5LDI0NCwxMjIsMTcsMjM5LDE1MCwxNiwyMTYsMTg3LDE5MywxNzEsNTcsMjExXX0sImVtYWlsIjoianVhbml0b0BnbWFpbC5jb20iLCJpYXQiOjE3NDA2MDU0NDIsImV4cCI6MTc0MDY0ODY0Mn0.nCBEb2ranE9pJnPYOBqOk6Pp8FTCwdidVbMo4pFAwps
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzIyNCwyNTUsMjUsMSwyNDQsMTg5LDE3LDIzOSwxNTAsMTYsMjE2LDE4NywxOTMsMTcxLDU3LDIxMV19LCJlbWFpbCI6Imp1YW5pdG9AZ21haWwuY29tIiwiaWF0IjoxNzQwNjczMzY5LCJleHAiOjE3NDA3MTY1Njl9.MVjCwQS5mkcgc905ZQ_GIAiu-6QyVEEtXuvEz4ajArY
 Content-Type: application/json
 
 {
-  "followee_id": "855608e4-f488-11ef-9610-d8bbc1ab39d3"
+  "followee_id": "076089fa-f4a8-11ef-9610-d8bbc1ab39d3"
 }
 
 ### unfollow user
 DELETE  http://localhost:3000/v1/follow
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzI1MCw1MCwyMDIsMTM5LDI0NCwxMjIsMTcsMjM5LDE1MCwxNiwyMTYsMTg3LDE5MywxNzEsNTcsMjExXX0sImVtYWlsIjoianVhbml0b0BnbWFpbC5jb20iLCJpYXQiOjE3NDA2MDU0NDIsImV4cCI6MTc0MDY0ODY0Mn0.nCBEb2ranE9pJnPYOBqOk6Pp8FTCwdidVbMo4pFAwps
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzIyNCwyNTUsMjUsMSwyNDQsMTg5LDE3LDIzOSwxNTAsMTYsMjE2LDE4NywxOTMsMTcxLDU3LDIxMV19LCJlbWFpbCI6Imp1YW5pdG9AZ21haWwuY29tIiwiaWF0IjoxNzQwNjczMzY5LCJleHAiOjE3NDA3MTY1Njl9.MVjCwQS5mkcgc905ZQ_GIAiu-6QyVEEtXuvEz4ajArY
 Content-Type: application/json
 
 {
-  "followee_id": "855608e4-f488-11ef-9610-d8bbc1ab39d3"
+  "followee_id": "076089fa-f4a8-11ef-9610-d8bbc1ab39d3"
 }
 
+### save post
+POST http://localhost:3000/v1/savepost
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzcsOTYsMTM3LDI1MCwyNDQsMTY4LDE3LDIzOSwxNTAsMTYsMjE2LDE4NywxOTMsMTcxLDU3LDIxMV19LCJlbWFpbCI6Im9tYXJAZ21haWwuY29tIiwiaWF0IjoxNzQwNjE4ODE1LCJleHAiOjE3NDA2NjIwMTV9.CDtLFhVzSD1EzEBsG1pfA-64NWh7Lf9pIbP4s4-QQdY
+Content-Type: application/json
+
+{
+  "post_id": "3a1c373a-f4a8-11ef-9610-d8bbc1ab39d3"
+}
+
+### unsave post
+DELETE  http://localhost:3000/v1/savepost
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzcsOTYsMTM3LDI1MCwyNDQsMTY4LDE3LDIzOSwxNTAsMTYsMjE2LDE4NywxOTMsMTcxLDU3LDIxMV19LCJlbWFpbCI6Im9tYXJAZ21haWwuY29tIiwiaWF0IjoxNzQwNjE4ODE1LCJleHAiOjE3NDA2NjIwMTV9.CDtLFhVzSD1EzEBsG1pfA-64NWh7Lf9pIbP4s4-QQdY
+Content-Type: application/json
+
+{
+  "post_id": "3a1c373a-f4a8-11ef-9610-d8bbc1ab39d3"
+}
+
+### get saved posts
+GET http://localhost:3000/v1/savepost
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6WzcsOTYsMTM3LDI1MCwyNDQsMTY4LDE3LDIzOSwxNTAsMTYsMjE2LDE4NywxOTMsMTcxLDU3LDIxMV19LCJlbWFpbCI6Im9tYXJAZ21haWwuY29tIiwiaWF0IjoxNzQwNjE4ODE1LCJleHAiOjE3NDA2NjIwMTV9.CDtLFhVzSD1EzEBsG1pfA-64NWh7Lf9pIbP4s4-QQdY
+Content-Type: application/json
+
+{
+  "page": 1
+}
+
+### get followers
+GET http://localhost:3000/v1/followers/076089fa-f4a8-11ef-9610-d8bbc1ab39d3
+
+### get followees
+GET http://localhost:3000/v1/following/076089fa-f4a8-11ef-9610-d8bbc1ab39d3

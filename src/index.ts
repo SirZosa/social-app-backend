@@ -1,6 +1,7 @@
 import express from "express";
 import { corsMiddleware } from "./middlewares/cors.js";
 import { createRouter } from "./routes/api.js";
+import cookieParser from "cookie-parser";
 import type { UserModel } from "./controller/interfaces.js";
 
 export const createApp = ({UserModel}:{UserModel:UserModel}) => {
@@ -10,6 +11,7 @@ export const createApp = ({UserModel}:{UserModel:UserModel}) => {
     app.use(express.json())
     app.use(corsMiddleware())
     app.disable('x-powered-by')
+    app.use(cookieParser())
     app.use('/v1', createRouter({UserModel}))
     app.get('/', (req, res)=>{
         res.status(200).send('hello worldd')

@@ -1,6 +1,7 @@
 import { UserModel } from "./interfaces.js"
 import { validatePartialUser, validateUser, validateComment, validatePost } from "../validations/userValidation.js"
 import { Request, Response } from "express"
+import cookieParser from "cookie-parser"
 
 export class UserController{
     private UserModel:UserModel
@@ -14,12 +15,13 @@ export class UserController{
             res.status(400).json(JSON.parse(result.error.message))
             return
         }
-        const isLogged = await this.UserModel.logIn({input:result.data})
-        if(!isLogged){
+        const token = await this.UserModel.logIn({input:result.data})
+        if(!token){
             res.status(401).json({message:'Incorrect user and/or password.'})
             return
         }
-        res.status(200).json(isLogged)
+        res.cookie('token', token, {httpOnly:true, sameSite:'lax'})
+        res.status(200).json(token);
     }
 
     signUp = async(req:Request, res:Response)=>{
