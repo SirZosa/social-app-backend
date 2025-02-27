@@ -223,6 +223,30 @@ export class AppModel{
         }
     }
 
+    static async getFollowing({input}:{input:string}){
+        const [following] = await connection.query<mysql.RowDataPacket[]>(
+            `SELECT BIN_TO_UUID(followee_id) followee_id, users.username, users.profile_pic_url
+             FROM followers
+             JOIN users ON followers.followee_id = users.user_id
+             WHERE followers.follower_id = UUID_TO_BIN(?)`,
+            [input]
+        )
+        if(following) return JSON.parse(JSON.stringify(following))
+        return {error: 'No following found'}
+    }
+
+    static async getFollowers({input}:{input:string}){
+        const [followers] = await connection.query<mysql.RowDataPacket[]>(
+            `SELECT BIN_TO_UUID(follower_id) follower_id, users.username, users.profile_pic_url
+             FROM followers
+             JOIN users ON followers.follower_id = users.user_id
+             WHERE followers.followee_id = UUID_TO_BIN(?)`,
+            [input]
+        )
+        if(followers) return JSON.parse(JSON.stringify(followers))
+        return {error: 'No followers found'}
+    }
+
     static async postComment({input}:postCommmentInput){
         const {post_id, user_id, content} = input
         const hexString = Buffer.from(user_id.data).toString('hex');

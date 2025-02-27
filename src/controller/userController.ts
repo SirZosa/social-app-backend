@@ -179,6 +179,34 @@ export class UserController{
         res.status(201).json({message:'User unfollowed'})
     }
 
+    getFollowing = async(req:Request, res:Response)=>{
+        const user_id = req.params.user_id
+        if(!user_id){
+            res.status(400).json({message:'User id is required'})
+            return
+        }
+        const following = await this.UserModel.getFollowing({input:user_id})
+        if(following.error){
+            res.status(404).json({message:'Following not found'})
+            return
+        }
+        res.status(200).json(following)
+    }
+
+    getFollowers = async(req:Request, res:Response)=>{
+        const user_id = req.params.user_id
+        if(!user_id){
+            res.status(400).json({message:'User id is required'})
+            return
+        }
+        const followers = await this.UserModel.getFollowers({input:user_id})
+        if(followers.error){
+            res.status(404).json({message:'Followers not found'})
+            return
+        }
+        res.status(200).json(followers)
+    }
+
     getFolloweePosts = async(req:Request, res:Response)=>{
         const {page} = req.body
         const user_id = req.body.user.id
@@ -296,6 +324,7 @@ export class UserController{
     getSavedPosts = async(req:Request, res:Response)=>{
         const {page} = req.body
         const user_id = req.body.user.id
+        console.log(user_id)
         if(!page){
             res.status(400).json({message:'Page is required'})
             return
@@ -304,7 +333,7 @@ export class UserController{
             res.status(400).json({message:'User id is required'})
             return
         }
-        const posts = await this.UserModel.getSavedPosts({input:user_id, page})
+        const posts = await this.UserModel.getSavedPosts({input:{user_id, page}})
         if(posts.error){
             res.status(404).json({message:'Posts not found'})
             return
