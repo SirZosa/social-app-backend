@@ -61,7 +61,18 @@ export class AppModel{
 
     static async getProfile({input}:getProfileInput){
         const [user] = await connection.query<mysql.RowDataPacket[]>(
-            'SELECT BIN_TO_UUID(user_id) user_id, first_name, last_name, username, profile_pic_url, profile_background_url, date_created FROM users WHERE BIN_TO_UUID(user_id) = ?',
+            `SELECT 
+                BIN_TO_UUID(users.user_id) user_id, 
+                users.first_name, 
+                users.last_name, 
+                users.username, 
+                users.profile_pic_url, 
+                users.profile_background_url, 
+                users.date_created,
+                (SELECT COUNT(*) FROM followers WHERE followers.followee_id = users.user_id) AS followerCount,
+                (SELECT COUNT(*) FROM followers WHERE followers.follower_id = users.user_id) AS followingCount
+                FROM users 
+                WHERE BIN_TO_UUID(users.user_id) = ?`,
             [input]
         )
         if(user[0]) return JSON.parse(JSON.stringify(user[0]))
