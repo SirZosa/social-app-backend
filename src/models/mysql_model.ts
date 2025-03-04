@@ -21,31 +21,47 @@ const connection = await mysql.createConnection(config)
 export class AppModel{
     static async logIn({input}:logInInput){
         const {email, password} = input
-        const [user] = await connection.query<mysql.RowDataPacket[]>(
-            'SELECT * FROM users WHERE email = ?',
-            [email]
-        )
-        if(user.length === 0){
-            return {error: 'User not found'}
+        try{
+            const [user] = await connection.query<mysql.RowDataPacket[]>(
+                'SELECT * FROM users WHERE email = ?',
+                [email]
+            )
+            if(user.length === 0){
+                return {error: 'User not found'}
+            }
+            const validatePassword = await bcrypt.compare(password, user[0].password_hash)
+            if(validatePassword == false){
+                return validatePassword
+            }
+            const token = jwt.sign({id:user[0].user_id, email:user[0].email}, JWT_SECRET, {expiresIn:'12h'})
+            return token
         }
-        const validatePassword = await bcrypt.compare(password, user[0].password_hash)
-        if(validatePassword == false){
-            return validatePassword
+        catch(error){
+            return {error: 'Error logging in'}
         }
-        const token = jwt.sign({id:user[0].user_id, email:user[0].email}, JWT_SECRET, {expiresIn:'12h'})
-        return token
     }
 
     static async signUp({input}:signUpInput){
         const {name, lastname, username, email, password} = input
-        const [userExists] = await connection.query<mysql.RowDataPacket[]>(
-            'SELECT * FROM users WHERE email = ? OR username = ?',
-            [email, username]
-        )
-        if(userExists.length > 0){
-            return {error: 'User already exists'}
+        try{
+            const [emailExists] = await connection.query<mysql.RowDataPacket[]>(
+                'SELECT * FROM users WHERE email = ?',
+                [email]
+            )
+            if(emailExists.length > 0){
+                return {error: 'Email already in use'}
+            }
+            const [userExists] = await connection.query<mysql.RowDataPacket[]>(
+                'SELECT * FROM users WHERE username = ?',
+                [username]
+            )
+            if(userExists.length > 0){
+                return {error: 'Username already in use'}
+            }
         }
-
+        catch(error){
+            return {error: 'Error checking for user'}
+        }
         const hashedPassword = await bcrypt.hash(password, salt)
         try{
             await connection.query(

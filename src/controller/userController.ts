@@ -1,7 +1,6 @@
 import { UserModel } from "./interfaces.js"
 import { validatePartialUser, validateUser, validateComment, validatePost } from "../validations/userValidation.js"
-import { Request, Response } from "express"
-import cookieParser from "cookie-parser"
+import e, { Request, Response } from "express"
 
 export class UserController{
     private UserModel:UserModel
@@ -21,18 +20,26 @@ export class UserController{
             return
         }
         res.cookie('token', token, {httpOnly:true, sameSite:'lax'})
-        res.status(200).json(token);
+        res.status(200).json({message:'Logged in'});
     }
 
     signUp = async(req:Request, res:Response)=>{
         const result = validateUser(req.body)
         if(result.error){
-            res.status(400).json(JSON.parse(result.error.message))
+            res.status(406).json(JSON.parse(result.error.message))
             return
         }
         const userCreated = await this.UserModel.signUp({input:result.data})
-        if(userCreated.error){
-            res.status(409).json({message:'User already exists'})
+        if(userCreated.error == 'Username already in use'){
+            res.status(409).json({message:'Username already in use'})
+            return
+        }
+        else if(userCreated.error == 'Email already in use'){
+            res.status(400).json({message:'Email already in use'})
+            return
+        }
+        else if(userCreated.error){
+            res.status(500).json({message:'Error creating user'})
             return
         }
         res.status(201).json(userCreated)
