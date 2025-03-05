@@ -144,12 +144,9 @@ export class UserController{
         }
         let user_id
         if(req.body.user == false){
-            console.log("here 3")
             user_id = undefined
         }
         else{
-            console.log('here 4')
-            console.log(req.body.user)
             user_id = req.body.user.id
         }
         console.log(user_id)

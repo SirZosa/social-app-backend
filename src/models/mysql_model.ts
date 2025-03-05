@@ -160,9 +160,7 @@ export class AppModel{
         console.log(input)
         const {pageNum, user_id} = input
         const offset = (pageNum-1) * 10
-        console.log(user_id)
         if(user_id){
-            console.log('here 5')
             console.log(user_id)
             const hexString = Buffer.from(user_id.data).toString('hex');
             try {
@@ -210,8 +208,6 @@ export class AppModel{
         }
         else{
             try{
-                console.log('here 6')
-                console.log(offset)
                 const [posts] = await connection.query<mysql.RowDataPacket[]>(
                     `SELECT 
                         BIN_TO_UUID(posts.post_id) AS post_id, 
