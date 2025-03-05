@@ -1,6 +1,6 @@
 import { UserModel } from "./interfaces.js"
 import { validatePartialUser, validateUser, validateComment, validatePost } from "../validations/userValidation.js"
-import e, { Request, Response } from "express"
+import { Request, Response } from "express"
 
 export class UserController{
     private UserModel:UserModel
@@ -138,11 +138,23 @@ export class UserController{
     }
 
     getPosts = async(req:Request, res:Response)=>{
-        if(!req.body.page){
+        if(!req.query.page){
             res.status(400).json({message:'Page is required'})
             return
         }
-        const posts = await this.UserModel.getPosts({input:req.body.page})
+        let user_id
+        if(req.body.user == false){
+            console.log("here 3")
+            user_id = undefined
+        }
+        else{
+            console.log('here 4')
+            console.log(req.body.user)
+            user_id = req.body.user.id
+        }
+        console.log(user_id)
+        const pageNum = parseInt(req.query.page as string)
+        const posts = await this.UserModel.getPosts({pageNum, user_id})
         if(posts.error){
             res.status(404).json({message:'Posts not found'})
             return

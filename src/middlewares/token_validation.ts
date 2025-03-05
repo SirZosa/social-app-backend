@@ -9,7 +9,7 @@ export async function authenticate(req:Request, res:Response, next:NextFunction)
         return
     }
     try {
-      req.body.user = jwt.verify(token.split(' ')[1], process.env.JWT_SECRET || '');
+      req.body.user = jwt.verify(token, process.env.JWT_SECRET || '');
       next();
     } catch (error) {
       res.status(400).json({ message: 'Unable to authenticate' });

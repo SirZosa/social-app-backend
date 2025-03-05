@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { UserController } from "../controller/userController.js";
 import { authenticate } from "../middlewares/token_validation.js";
+import { partialAuthenticate } from "../middlewares/partial_token_validation.js";
 import type { UserModel } from "../controller/interfaces.js";
 
 export const createRouter = ({ UserModel }: { UserModel: UserModel }) => {
@@ -10,8 +11,8 @@ export const createRouter = ({ UserModel }: { UserModel: UserModel }) => {
     apiRouter.post("/login", userController.logIn);
     apiRouter.post("/signup", userController.signUp);
     apiRouter.get("/profile/:user_id", userController.getProfile);
-    apiRouter.get("/posts", userController.getPosts);
-    apiRouter.post("/post", authenticate, userController.uploadPost);
+    apiRouter.get("/posts", partialAuthenticate,userController.getPosts);
+    apiRouter.post("/posts", authenticate, userController.uploadPost);
     apiRouter.delete("/posts", authenticate, userController.deletePost);
     apiRouter.post("/like", authenticate, userController.postLike);
     apiRouter.delete("/like", authenticate, userController.removeLike);
