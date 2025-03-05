@@ -149,7 +149,6 @@ export class UserController{
         else{
             user_id = req.body.user.id
         }
-        console.log(user_id)
         const pageNum = parseInt(req.query.page as string)
         const posts = await this.UserModel.getPosts({pageNum, user_id})
         if(posts.error){
@@ -342,7 +341,6 @@ export class UserController{
     getSavedPosts = async(req:Request, res:Response)=>{
         const {page} = req.body
         const user_id = req.body.user.id
-        console.log(user_id)
         if(!page){
             res.status(400).json({message:'Page is required'})
             return

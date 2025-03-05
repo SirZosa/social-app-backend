@@ -171,20 +171,26 @@ export class AppModel{
                         posts.date_created,
                         users.username,
                         users.profile_pic_url,
-                        COUNT(DISTINCT likes.like_id) AS like_count, -- Count the number of likes
-                        COUNT(DISTINCT comments.comment_id) AS comment_count, -- Count the number of comments
+                        COUNT(DISTINCT likes.like_id) AS like_count,
+                        COUNT(DISTINCT comments.comment_id) AS comment_count,
                         EXISTS (
                             SELECT 1 
                             FROM likes 
                             WHERE likes.post_id = posts.post_id 
                             AND likes.user_id = UUID_TO_BIN(?)
-                        ) AS is_liked, -- Check if the authenticated user has liked the post
+                        ) AS is_liked,
                         EXISTS (
                             SELECT 1 
                             FROM saved_posts 
                             WHERE saved_posts.post_id = posts.post_id 
                             AND saved_posts.user_id = UUID_TO_BIN(?)
-                        ) AS is_saved -- Check if the authenticated user has saved the post
+                        ) AS is_saved,
+                        EXISTS (
+                            SELECT 1 
+                            FROM followers 
+                            WHERE followers.follower_id = UUID_TO_BIN(?) 
+                            AND followers.followee_id = posts.user_id
+                        ) AS is_following
                     FROM posts
                     JOIN users ON posts.user_id = users.user_id
                     LEFT JOIN likes ON posts.post_id = likes.post_id
@@ -192,7 +198,7 @@ export class AppModel{
                     GROUP BY posts.post_id
                     ORDER BY posts.date_created DESC
                     LIMIT ? OFFSET ?`,
-                    [hexString, hexString, 10, offset] // Pass the authenticated user_id twice (for is_liked and is_saved)
+                    [hexString, hexString,hexString, 10, offset] // Pass the authenticated user_id twice (for is_liked and is_saved)
                 );
         
                 if (posts.length > 0) {
@@ -325,7 +331,6 @@ export class AppModel{
             return {message:'Comment created'}
         }
         catch(error){
-            console.log(error)
             return {error: 'Error creating comment'}
         }
     }
@@ -340,7 +345,6 @@ export class AppModel{
             return {message:'Comment deleted'}
         }
         catch(error){
-            console.log(error)
             return {error: 'Error deleting comment'}
         }
     }
