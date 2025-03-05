@@ -157,11 +157,9 @@ export class AppModel{
     }
 
     static async getPosts(input:{pageNum:number, user_id:{"type":"Buffer","data":Array<number>}|undefined}){
-        console.log(input)
         const {pageNum, user_id} = input
         const offset = (pageNum-1) * 10
         if(user_id){
-            console.log(user_id)
             const hexString = Buffer.from(user_id.data).toString('hex');
             try {
                 const [posts] = await connection.query<mysql.RowDataPacket[]>(
@@ -202,7 +200,6 @@ export class AppModel{
                 }
                 return { error: 'No posts found' };
             } catch (error) {
-                console.error(error);
                 return { error: 'Error fetching posts' };
             }
         }
@@ -232,7 +229,6 @@ export class AppModel{
                 return {error: 'No posts found'}
             }
             catch(error){
-                console.error(error)
                 return {error: 'Error fetching posts'}
             }
         }
