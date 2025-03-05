@@ -156,10 +156,11 @@ export class AppModel{
         }
     }
 
-    static async getPosts(input:{pageNum:number, user_id:{"type":"Buffer","data":Array<number>}|undefined}){
-        const {pageNum, user_id} = input
-        const offset = (pageNum-1) * 10
-        if(user_id){
+    static async getPosts(input: { pageNum: number, user_id: { "type": "Buffer", "data": Array<number> } | undefined }) {
+        const { pageNum, user_id } = input;
+        const offset = (pageNum - 1) * 10;
+    
+        if (user_id) {
             const hexString = Buffer.from(user_id.data).toString('hex');
             try {
                 const [posts] = await connection.query<mysql.RowDataPacket[]>(
@@ -198,19 +199,18 @@ export class AppModel{
                     GROUP BY posts.post_id
                     ORDER BY posts.date_created DESC
                     LIMIT ? OFFSET ?`,
-                    [hexString, hexString,hexString, 10, offset] // Pass the authenticated user_id twice (for is_liked and is_saved)
+                    [hexString, hexString, hexString, 10, offset]
                 );
-        
+    
                 if (posts.length > 0) {
-                    return JSON.parse(JSON.stringify(posts));
+                    return { posts: JSON.parse(JSON.stringify(posts)), hasMore: true }; // Indicate that more posts are available
                 }
-                return { error: 'No posts found' };
+                return { posts: [], hasMore: false }; // No more posts available
             } catch (error) {
                 return { error: 'Error fetching posts' };
             }
-        }
-        else{
-            try{
+        } else {
+            try {
                 const [posts] = await connection.query<mysql.RowDataPacket[]>(
                     `SELECT 
                         BIN_TO_UUID(posts.post_id) AS post_id, 
@@ -220,22 +220,24 @@ export class AppModel{
                         posts.date_created,
                         users.username,
                         users.profile_pic_url,
-                        COUNT(DISTINCT likes.like_id) AS like_count, -- Count the number of likes
-                        COUNT(DISTINCT comments.comment_id) AS comment_count -- Count the number of comments
+                        COUNT(DISTINCT likes.like_id) AS like_count,
+                        COUNT(DISTINCT comments.comment_id) AS comment_count
                     FROM posts
                     JOIN users ON posts.user_id = users.user_id
-                    LEFT JOIN likes ON posts.post_id = likes.post_id -- Join with the likes table
-                    LEFT JOIN comments ON posts.post_id = comments.post_id -- Join with the comments table
-                    GROUP BY posts.post_id -- Group by post to aggregate likes and comments
+                    LEFT JOIN likes ON posts.post_id = likes.post_id
+                    LEFT JOIN comments ON posts.post_id = comments.post_id
+                    GROUP BY posts.post_id
                     ORDER BY posts.date_created DESC
                     LIMIT ? OFFSET ?`,
                     [10, offset]
                 );
-                if(posts) return JSON.parse(JSON.stringify(posts))
-                return {error: 'No posts found'}
-            }
-            catch(error){
-                return {error: 'Error fetching posts'}
+    
+                if (posts.length > 0) {
+                    return { posts: JSON.parse(JSON.stringify(posts)), hasMore: true }; // Indicate that more posts are available
+                }
+                return { posts: [], hasMore: false }; // No more posts available
+            } catch (error) {
+                return { error: 'Error fetching posts' };
             }
         }
     }
