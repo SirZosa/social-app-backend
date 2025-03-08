@@ -19,8 +19,9 @@ export class UserController{
             res.status(401).json({message:'Incorrect user and/or password.'})
             return
         }
-        res.cookie('token', token, {httpOnly:true, sameSite:'lax'})
-        res.status(200).json({message:'Logged in'});
+        const {user_info, auth_token} = token
+        res.cookie('token', auth_token, {httpOnly:true, sameSite:'lax'})
+        res.status(200).json(user_info);
     }
 
     signUp = async(req:Request, res:Response)=>{
@@ -335,7 +336,7 @@ export class UserController{
             res.status(409).json({message:'Error unsaving post'})
             return
         }
-        res.status(201).json({message:'Post unsaved'})
+        res.status(200).json({message:'Post unsaved'})
     }
 
     getSavedPosts = async(req:Request, res:Response)=>{

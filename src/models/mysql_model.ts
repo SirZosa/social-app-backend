@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 import 'dotenv/config'
 import { ConnectionOptions } from 'mysql2/promise'
 import { logInInput, signUpInput, getProfileInput, uploadPostInput, postLikeInput, getFolloweesPostsInput, postCommmentInput, getCommentsInput, deletePostInput, followInput, savePostInput, getSavedPostsInput } from './interfaces'
+import { profile } from 'console'
 
 const config:ConnectionOptions ={
     host: process.env.DB_HOST,
@@ -23,7 +24,7 @@ export class AppModel{
         const {email, password} = input
         try{
             const [user] = await connection.query<mysql.RowDataPacket[]>(
-                'SELECT * FROM users WHERE email = ?',
+                `SELECT user_id, BIN_TO_UUID(user_id) as user_hex_id, first_name, last_name, username, email, password_hash, profile_pic_url, profile_background_url, date_created FROM users WHERE email = ?`,
                 [email]
             )
             if(user.length === 0){
@@ -33,8 +34,18 @@ export class AppModel{
             if(validatePassword == false){
                 return validatePassword
             }
-            const token = jwt.sign({id:user[0].user_id, email:user[0].email}, JWT_SECRET, {expiresIn:'12h'})
-            return token
+            const user_info = {
+                user_id: user[0].user_hex_id, 
+                first_name: user[0].first_name, 
+                last_name: user[0].last_name,
+                username: user[0].username,
+                email: user[0].email,
+                profile_pic: user[0].profile_pic_url,
+                profile_background_pic: user[0].profile_background_url,
+                date_created: user[0].date_created
+            }
+            const auth_token = jwt.sign({id:user[0].user_id, email:user[0].email}, JWT_SECRET, {expiresIn:'12h'})
+            return {user_info, auth_token}
         }
         catch(error){
             return {error: 'Error logging in'}

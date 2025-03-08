@@ -19,7 +19,7 @@ const userSchema = z.object({
 const postSchema = z.object({
     content: z.string({
         required_error: 'A last name is required'
-    }).max(500),
+    }).max(400).nonempty(),
     media_url: z.string().max(250).optional()
 })
 
@@ -29,7 +29,7 @@ const commentSchema = z.object({
     }),
     content: z.string({
         required_error: 'Content is required'
-    }).max(500),
+    }).max(300),
 })
     
 
