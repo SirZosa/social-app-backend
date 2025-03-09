@@ -17,5 +17,6 @@ export type UserModel={
         unsavePost:Function,
         getSavedPosts:Function,
         getFollowing:Function,
-        getFollowers:Function
+        getFollowers:Function,
+        getUserInfo:Function
 }

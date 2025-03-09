@@ -109,12 +109,13 @@ export class AppModel{
     static async uploadPost({input}:uploadPostInput){
         const {user_id, content, media_url} = input
         const hexString = Buffer.from(user_id.data).toString('hex');
+        const post_id = crypto.randomUUID()
         try{
             await connection.query(
-                'INSERT INTO posts (user_id, content, media_url) VALUES (UNHEX(?), ?, ?)',
-                [hexString, content, media_url]
+                'INSERT INTO posts (post_id, user_id, content, media_url) VALUES (UUID_TO_BIN(?),UNHEX(?), ?, ?)',
+                [post_id, hexString, content, media_url]
             )
-            return {message:'Post created'}
+            return {post_id}
         }
         catch(error){
             return {error: 'Error creating post'}
@@ -431,6 +432,23 @@ export class AppModel{
         catch(error){
             console.error(error)
             return {error: 'Error fetching saved posts'}
+        }
+    }
+
+    static async getUserInfo({input}:{input: {type:"Buffer",data:Array<number>}}){
+        const hexString = Buffer.from(input.data).toString('hex');
+        try{
+            const [user] = await connection.query<mysql.RowDataPacket[]>(
+                `SELECT BIN_TO_UUID(user_id) as user_hex_id, first_name, last_name, username, email, profile_pic_url, profile_background_url, date_created FROM users WHERE user_id = UNHEX(?)`,
+                [hexString]
+            )
+            if(user.length === 0){
+                return {error: 'User not found'}
+            }
+            return user[0]
+        }
+        catch(error){
+            return {error: 'Error fetching user info'}
         }
     }
 }

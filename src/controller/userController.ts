@@ -77,7 +77,7 @@ export class UserController{
             res.status(409).json({message:'Error creating post'})
             return
         }
-        res.status(201).json({message:'Post created'})
+        res.status(201).json(post)
     }
 
     deletePost = async(req:Request, res:Response)=>{
@@ -357,5 +357,18 @@ export class UserController{
         }
         res.status(200).json(posts)
     }
-
+    
+    getUserInfo = async(req:Request, res:Response)=>{
+        const user_id = req.body.user.id
+        if(!user_id){
+            res.status(400).json({message:'User id is required'})
+            return
+        }
+        const user_info = await this.UserModel.getUserInfo({input:user_id})
+        if(!user_info){
+            res.status(401).json({message:'Unable to fetch user'})
+            return
+        }
+        res.status(200).json(user_info);
+    }
 }
