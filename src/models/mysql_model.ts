@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken'
 import 'dotenv/config'
 import { ConnectionOptions } from 'mysql2/promise'
 import { logInInput, signUpInput, getProfileInput, uploadPostInput, postLikeInput, getFolloweesPostsInput, postCommmentInput, getCommentsInput, deletePostInput, followInput, savePostInput, getSavedPostsInput } from './interfaces'
-import { profile } from 'console'
 
 const config:ConnectionOptions ={
     host: process.env.DB_HOST,
@@ -165,6 +164,87 @@ export class AppModel{
         catch(error){
             console.error(error)
             return {error: 'Error removing like'}
+        }
+    }
+
+    static async getPostById(input: { post_id: string, user_id: { "type": "Buffer", "data": Array<number> } | undefined }) {
+        const { post_id, user_id } = input;
+        if(user_id){
+            const hexString = Buffer.from(user_id.data).toString('hex');
+            try{
+                const [post] = await connection.query<mysql.RowDataPacket[]>(
+                    `SELECT 
+                        BIN_TO_UUID(posts.post_id) AS post_id, 
+                        BIN_TO_UUID(posts.user_id) AS user_id, 
+                        posts.content, 
+                        posts.media_url, 
+                        posts.date_created,
+                        users.username,
+                        users.profile_pic_url,
+                        COUNT(DISTINCT likes.like_id) AS like_count,
+                        COUNT(DISTINCT comments.comment_id) AS comment_count,
+                        EXISTS (
+                            SELECT 1 
+                            FROM likes 
+                            WHERE likes.post_id = posts.post_id 
+                            AND likes.user_id = UUID_TO_BIN(?)
+                        ) AS is_liked,
+                        EXISTS (
+                            SELECT 1 
+                            FROM saved_posts 
+                            WHERE saved_posts.post_id = posts.post_id 
+                            AND saved_posts.user_id = UUID_TO_BIN(?)
+                        ) AS is_saved,
+                        EXISTS (
+                            SELECT 1 
+                            FROM followers 
+                            WHERE followers.follower_id = UUID_TO_BIN(?) 
+                            AND followers.followee_id = posts.user_id
+                        ) AS is_following
+                    FROM posts
+                    JOIN users ON posts.user_id = users.user_id
+                    LEFT JOIN likes ON posts.post_id = likes.post_id
+                    LEFT JOIN comments ON posts.post_id = comments.post_id
+                    WHERE BIN_TO_UUID(posts.post_id) = ?
+                    GROUP BY posts.post_id`,
+                    [hexString, hexString, hexString, post_id]
+                )
+                if(post[0]) return JSON.parse(JSON.stringify(post[0]))
+                return {error: 'Post not found'}
+            }
+            catch(error){
+                console.error(error)
+                return {error: 'Error getting post'}
+            }
+        }
+        else{
+            try {
+                const [posts] = await connection.query<mysql.RowDataPacket[]>(
+                    `SELECT 
+                        BIN_TO_UUID(posts.post_id) AS post_id, 
+                        BIN_TO_UUID(posts.user_id) AS user_id, 
+                        posts.content, 
+                        posts.media_url, 
+                        posts.date_created,
+                        users.username,
+                        users.profile_pic_url,
+                        COUNT(DISTINCT likes.like_id) AS like_count,
+                        COUNT(DISTINCT comments.comment_id) AS comment_count
+                    FROM posts 
+                    JOIN users ON posts.user_id = users.user_id
+                    LEFT JOIN likes ON posts.post_id = likes.post_id
+                    LEFT JOIN comments ON posts.post_id = comments.post_id
+                    WHERE BIN_TO_UUID(posts.post_id) = ?
+                    GROUP BY posts.post_id`,
+                    [post_id]
+                );
+                if (posts.length > 0) {
+                    return JSON.parse(JSON.stringify(posts));
+                }
+                return [];
+            } catch (error) {
+                return { error: 'Error fetching posts' };
+            }
         }
     }
 
@@ -367,7 +447,7 @@ export class AppModel{
         const {post_id, page} = input
         const offset = (page-1) * 10
         const comments = await connection.query<mysql.RowDataPacket[]>(
-            `SELECT BIN_TO_UUID(comments.comment_id) comment_id, BIN_TO_UUID(comments.user_id) user_id, BIN_TO_UUID(comments.post_id) post_id, comments.content, users.username, users.profile_pic_url
+            `SELECT BIN_TO_UUID(comments.comment_id) comment_id, BIN_TO_UUID(comments.user_id) user_id, BIN_TO_UUID(comments.post_id) post_id, comments.content, users.username, users.profile_pic_url, comments.date_created
              FROM comments
              JOIN users ON comments.user_id = users.user_id
              WHERE comments.post_id = UUID_TO_BIN(?)

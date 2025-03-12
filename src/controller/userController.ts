@@ -159,6 +159,24 @@ export class UserController{
         res.status(200).json(posts)
     }
 
+    getPostById = async(req:Request, res:Response)=>{
+        const {post_id} = req.params
+        let user_id = req.body.user.id
+        if(!post_id){
+            res.status(400).json({message:'Post id is required'})
+            return
+        }
+        if(!user_id){
+            user_id = undefined
+        }
+        const post = await this.UserModel.getPostById({post_id, user_id})
+        if(post.error){
+            res.status(404).json({message:'Post not found'})
+            return
+        }
+        res.status(200).json(post)
+    }
+
     follow = async(req:Request, res:Response)=>{
         const {followee_id} = req.body
         const user_id = req.body.user.id
@@ -284,15 +302,16 @@ export class UserController{
     }
 
     getComments = async(req:Request, res:Response)=>{
-        const {post_id, page} = req.body
-        if(!post_id){
+        if(!req.params.post_id){
             res.status(400).json({message:'Post id is required'})
             return
         }
-        if(!page){
+        if(!req.query.page){
             res.status(400).json({message:'Page is required'})
             return
         }
+        const post_id = req.params.post_id;
+        const page = parseInt(req.query.page as string)
         const comments = await this.UserModel.getComments({input:{post_id, page}})
         if(comments.error){
             res.status(404).json({message:'Comments not found'})

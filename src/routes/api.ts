@@ -12,6 +12,7 @@ export const createRouter = ({ UserModel }: { UserModel: UserModel }) => {
     apiRouter.post("/signup", userController.signUp);
     apiRouter.get("/profile/:user_id", userController.getProfile);
     apiRouter.get("/posts", partialAuthenticate,userController.getPosts);
+    apiRouter.get("/post/:post_id", partialAuthenticate, userController.getPostById);
     apiRouter.post("/posts", authenticate, userController.uploadPost);
     apiRouter.delete("/posts", authenticate, userController.deletePost);
     apiRouter.post("/like", authenticate, userController.postLike);
@@ -19,7 +20,7 @@ export const createRouter = ({ UserModel }: { UserModel: UserModel }) => {
     apiRouter.get("/followeePosts", authenticate, userController.getFolloweePosts);
     apiRouter.post("/comment", authenticate, userController.postComment);
     apiRouter.delete("/comment", authenticate, userController.deleteComment);
-    apiRouter.get("/comment", userController.getComments);
+    apiRouter.get("/comment/:post_id", userController.getComments);
     apiRouter.post("/follow", authenticate, userController.follow);
     apiRouter.delete("/follow", authenticate, userController.unfollow);
     apiRouter.post("/savepost", authenticate, userController.savePost);

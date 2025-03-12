@@ -5,8 +5,7 @@ const ACCEPTED_ORIGINS = [
   'http://localhost:3000',
   'http://localhost:5173',
   'http://localhost:5174',
-  'http://localhost:5175',
-  'https://omars-commerce.netlify.app',
+  'http://localhost:5175'
 ];
 
 export const corsMiddleware = ({ acceptedOrigins = ACCEPTED_ORIGINS } = {}) =>
