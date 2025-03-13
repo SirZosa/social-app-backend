@@ -447,17 +447,22 @@ export class AppModel{
     static async getComments({input}:getCommentsInput){
         const {post_id, page} = input
         const offset = (page-1) * 10
-        const comments = await connection.query<mysql.RowDataPacket[]>(
-            `SELECT BIN_TO_UUID(comments.comment_id) comment_id, BIN_TO_UUID(comments.user_id) user_id, BIN_TO_UUID(comments.post_id) post_id, comments.content, users.username, users.profile_pic_url, comments.date_created
-             FROM comments
-             JOIN users ON comments.user_id = users.user_id
-             WHERE comments.post_id = UUID_TO_BIN(?)
-             ORDER BY comments.date_created DESC
-             LIMIT ? OFFSET ?`,
-            [post_id, 10, offset]
-        )
-        if(comments[0]) return JSON.parse(JSON.stringify(comments[0]))
-        return {error: 'No comments found'}
+        try{
+            const comments = await connection.query<mysql.RowDataPacket[]>(
+                `SELECT BIN_TO_UUID(comments.comment_id) comment_id, BIN_TO_UUID(comments.user_id) user_id, BIN_TO_UUID(comments.post_id) post_id, comments.content, users.username, users.profile_pic_url, comments.date_created
+                 FROM comments
+                 JOIN users ON comments.user_id = users.user_id
+                 WHERE comments.post_id = UUID_TO_BIN(?)
+                 ORDER BY comments.date_created DESC
+                 LIMIT ? OFFSET ?`,
+                [post_id, 10, offset]
+            )
+            if(comments[0]) return JSON.parse(JSON.stringify(comments[0]))
+            return {error: 'No comments found'}
+        }
+        catch(error){
+            return {error: 'Error fetching comments'}
+        }
     }
 
     static async savePost({input}:savePostInput){

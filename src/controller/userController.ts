@@ -275,7 +275,6 @@ export class UserController{
         }
         const data = {...result.data, user_id}
         const comment = await this.UserModel.postComment({input:data})
-        console.log(comment)
         if(comment.error){
             res.status(409).json({message:'Error creating comment'})
             return
