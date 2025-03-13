@@ -416,13 +416,14 @@ export class AppModel{
 
     static async postComment({input}:postCommmentInput){
         const {post_id, user_id, content} = input
+        const comment_id = crypto.randomUUID()
         const hexString = Buffer.from(user_id.data).toString('hex');
         try{
             await connection.query(
-                'INSERT INTO comments (post_id, user_id, content) VALUES (UUID_TO_BIN(?), UNHEX(?), ?)',
-                [post_id, hexString, content]
+                'INSERT INTO comments (comment_id, post_id, user_id, content) VALUES (UUID_TO_BIN(?), UUID_TO_BIN(?), UNHEX(?), ?)',
+                [comment_id, post_id, hexString, content]
             )
-            return {message:'Comment created'}
+            return {comment_id}
         }
         catch(error){
             return {error: 'Error creating comment'}
