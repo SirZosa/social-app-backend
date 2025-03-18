@@ -340,17 +340,49 @@ export class AppModel{
         const hexString = Buffer.from(user_id.data).toString('hex');
         try{
             const [posts] = await connection.query<mysql.RowDataPacket[]>(
-                `SELECT BIN_TO_UUID(posts.post_id) post_id, BIN_TO_UUID(posts.user_id) user_id, posts.content, posts.media_url, posts.date_created, users.username, users.profile_pic_url
-                 FROM posts
-                 JOIN followers ON posts.user_id = followers.followee_id
-                 JOIN users ON posts.user_id = users.user_id
-                 WHERE followers.follower_id = UNHEX(?)
-                 ORDER BY posts.date_created DESC
-                 LIMIT ? OFFSET ?`,
-                [hexString, 10, offset]
+                `SELECT 
+                    BIN_TO_UUID(posts.post_id) AS post_id, 
+                    BIN_TO_UUID(posts.user_id) AS user_id, 
+                    posts.content, 
+                    posts.media_url, 
+                    posts.date_created,
+                    users.username,
+                    users.profile_pic_url,
+                    COUNT(DISTINCT likes.like_id) AS like_count,
+                    COUNT(DISTINCT comments.comment_id) AS comment_count,
+                    EXISTS (
+                        SELECT 1 
+                        FROM likes 
+                        WHERE likes.post_id = posts.post_id 
+                        AND likes.user_id = UUID_TO_BIN(?)
+                    ) AS is_liked,
+                    EXISTS (
+                        SELECT 1 
+                        FROM saved_posts 
+                        WHERE saved_posts.post_id = posts.post_id 
+                        AND saved_posts.user_id = UUID_TO_BIN(?)
+                    ) AS is_saved,
+                    EXISTS (
+                        SELECT 1 
+                        FROM followers 
+                        WHERE followers.follower_id = UUID_TO_BIN(?) 
+                        AND followers.followee_id = posts.user_id
+                    ) AS is_following
+                FROM posts
+                JOIN followers ON posts.user_id = followers.followee_id
+                JOIN users ON posts.user_id = users.user_id
+                LEFT JOIN likes ON posts.post_id = likes.post_id
+                LEFT JOIN comments ON posts.post_id = comments.post_id
+                WHERE followers.follower_id = UNHEX(?)
+                GROUP BY posts.post_id
+                ORDER BY posts.date_created DESC
+                LIMIT ? OFFSET ?`,
+                [hexString, hexString, hexString, hexString, 10, offset]
             )
-            if(posts) return JSON.parse(JSON.stringify(posts))
-            return {error: 'No posts found'}
+            if(posts.length > 0) {
+                return { posts: JSON.parse(JSON.stringify(posts)), hasMore: true };
+            }
+            return { posts: [], hasMore: false };
         }
         catch(error){
             console.error(error)
