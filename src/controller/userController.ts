@@ -244,12 +244,12 @@ export class UserController{
     }
 
     getFolloweePosts = async(req:Request, res:Response)=>{
-        const {page} = req.body
-        const user_id = req.body.user.id
-        if(!page){
+        if(!req.query.page){
             res.status(400).json({message:'Page is required'})
             return
         }
+        const page = parseInt(req.query.page as string)
+        const user_id = req.body.user.id
         if(!user_id){
             res.status(400).json({message:'User id is required'})
             return
