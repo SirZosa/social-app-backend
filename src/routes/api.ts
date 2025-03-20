@@ -29,6 +29,7 @@ export const createRouter = ({ UserModel }: { UserModel: UserModel }) => {
     apiRouter.get("/following/:user_id", userController.getFollowing);
     apiRouter.get("/followers/:user_id", userController.getFollowers);
     apiRouter.get("/user", authenticate, userController.getUserInfo)
+    apiRouter.post("/logout", authenticate, userController.logOut)
 
     return apiRouter;
 };

@@ -390,4 +390,14 @@ export class UserController{
         }
         res.status(200).json(user_info);
     }
+
+    logOut = async(req:Request, res:Response)=>{
+        try{
+            res.clearCookie('token')
+            res.status(200).json({message:'Logged out'})
+        }
+        catch(error){
+            res.status(500).json({message:'Unable to log out'})
+        }
+    }
 }

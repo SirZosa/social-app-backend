@@ -1,5 +1,5 @@
 export type UserModel={
-        logIn:Function,
+        logIn:Function,     
         signUp:Function,
         getProfile:Function,
         uploadPost:Function,
