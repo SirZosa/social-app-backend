@@ -359,7 +359,7 @@ export class UserController{
     }
 
     getSavedPosts = async(req:Request, res:Response)=>{
-        const {page} = req.body
+        const {page} = req.query
         const user_id = req.body.user.id
         if(!page){
             res.status(400).json({message:'Page is required'})

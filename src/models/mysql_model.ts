@@ -529,27 +529,52 @@ export class AppModel{
         }
     }
 
-    static async getSavedPosts({input}:getSavedPostsInput){
-        const {user_id, page} = input
-        const offset = (page-1) * 10
+    static async getSavedPosts({input}:getSavedPostsInput) {
+        const { page, user_id } = input;
+        const offset = (page - 1) * 10;
         const hexString = Buffer.from(user_id.data).toString('hex');
-        try{
+        try {
             const [posts] = await connection.query<mysql.RowDataPacket[]>(
-                `SELECT BIN_TO_UUID(saved_posts.post_id) post_id, BIN_TO_UUID(posts.user_id) user_id, posts.content, posts.media_url, posts.date_created, users.username, users.profile_pic_url
-                 FROM saved_posts
-                 JOIN posts ON saved_posts.post_id = posts.post_id
-                 JOIN users ON posts.user_id = users.user_id
-                 WHERE saved_posts.user_id = UNHEX(?)
-                 ORDER BY posts.date_created DESC
-                 LIMIT ? OFFSET ?`,
-                 [hexString, 10, offset]
-            )
-            if(posts) return JSON.parse(JSON.stringify(posts))
-            return {error: 'No saved posts found'}
-        }
-        catch(error){
-            console.error(error)
-            return {error: 'Error fetching saved posts'}
+                `SELECT 
+                    BIN_TO_UUID(p.post_id) AS post_id, 
+                    BIN_TO_UUID(p.user_id) AS user_id, 
+                    p.content, 
+                    p.media_url, 
+                    p.date_created,
+                    u.username,
+                    u.profile_pic_url,
+                    COUNT(DISTINCT l.like_id) AS like_count,
+                    COUNT(DISTINCT c.comment_id) AS comment_count,
+                    EXISTS (
+                        SELECT 1 
+                        FROM likes 
+                        WHERE likes.post_id = p.post_id 
+                        AND likes.user_id = UUID_TO_BIN(?)
+                    ) AS is_liked,
+                    1 AS is_saved,
+                    EXISTS (
+                        SELECT 1 
+                        FROM followers 
+                        WHERE followers.follower_id = UUID_TO_BIN(?) 
+                        AND followers.followee_id = p.user_id
+                    ) AS is_following
+                FROM posts p
+                JOIN users u ON p.user_id = u.user_id
+                LEFT JOIN likes l ON p.post_id = l.post_id
+                LEFT JOIN comments c ON p.post_id = c.post_id
+                JOIN saved_posts sp ON p.post_id = sp.post_id
+                WHERE sp.user_id = UUID_TO_BIN(?)
+                GROUP BY p.post_id
+                ORDER BY sp.date_created DESC
+                LIMIT ? OFFSET ?;`,
+                [hexString, hexString, hexString, 10, offset]
+            );
+            if (posts.length > 0) {
+                return { posts: JSON.parse(JSON.stringify(posts)), hasMore: true };
+            }
+            return { posts: [], hasMore: false };
+        } catch (error) {
+            return { error: 'Error fetching saved posts' };
         }
     }
 
