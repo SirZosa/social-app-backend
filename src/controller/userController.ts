@@ -47,12 +47,19 @@ export class UserController{
     }
 
     getProfile = async(req:Request, res:Response)=>{
-        const user_id = req.params.user_id
-        if(!user_id){
-            res.status(400).json({message:'User id is required'})
+        const profile_id = req.params.profile_id
+        let user_id
+        if(req.body.user == false){
+            user_id = undefined
+        }
+        else{
+            user_id = req.body.user.id
+        }
+        if(!profile_id){
+            res.status(400).json({message:'Profile id is required'})
             return
         }
-        const userData = await this.UserModel.getProfile({input:user_id})
+        const userData = await this.UserModel.getProfile({input:{profile_id, user_id}})
         if(userData.error){
             res.status(404).json({message:'User not found'})
             return

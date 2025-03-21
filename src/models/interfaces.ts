@@ -17,7 +17,8 @@ export interface signUpInput{
 
 export interface getProfileInput{
     input:{
-        "user_id":string
+        "profile_id":string,
+        "user_id":{"type":"Buffer","data":Array<number>}
     }
 }
 

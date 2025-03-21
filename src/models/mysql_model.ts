@@ -86,23 +86,61 @@ export class AppModel{
     }
 
     static async getProfile({input}:getProfileInput){
-        const [user] = await connection.query<mysql.RowDataPacket[]>(
-            `SELECT 
-                BIN_TO_UUID(users.user_id) user_id, 
-                users.first_name, 
-                users.last_name, 
-                users.username, 
-                users.profile_pic_url, 
-                users.profile_background_url, 
-                users.date_created,
-                (SELECT COUNT(*) FROM followers WHERE followers.followee_id = users.user_id) AS followerCount,
-                (SELECT COUNT(*) FROM followers WHERE followers.follower_id = users.user_id) AS followingCount
-                FROM users 
-                WHERE BIN_TO_UUID(users.user_id) = ?`,
-            [input]
-        )
-        if(user[0]) return JSON.parse(JSON.stringify(user[0]))
-        return {error: 'User not found'}
+        const {profile_id, user_id} = input
+        if(user_id){
+            const hexString = Buffer.from(user_id.data).toString('hex')
+            try {
+                const [user] = await connection.query<mysql.RowDataPacket[]>(
+                    `SELECT 
+                        BIN_TO_UUID(users.user_id) user_id, 
+                        users.first_name, 
+                        users.last_name, 
+                        users.username, 
+                        users.profile_pic_url, 
+                        users.profile_background_url, 
+                        users.date_created,
+                        (SELECT COUNT(*) FROM followers WHERE followers.followee_id = users.user_id) AS followerCount,
+                        (SELECT COUNT(*) FROM followers WHERE followers.follower_id = users.user_id) AS followingCount,
+                        EXISTS (
+                            SELECT 1 
+                            FROM followers 
+                            WHERE followers.follower_id = UUID_TO_BIN(?) 
+                            AND followers.followee_id = users.user_id
+                        ) AS isFollowing
+                    FROM users 
+                    WHERE BIN_TO_UUID(users.user_id) = ?`,
+                    [hexString, profile_id]
+                );
+                if (user[0]) return JSON.parse(JSON.stringify(user[0]));
+                return { error: 'User not found' };
+            } catch (error) {
+                return { error: 'Error getting user' };
+            }
+        }
+        else{
+            try{
+                const [user] = await connection.query<mysql.RowDataPacket[]>(
+                    `SELECT 
+                        BIN_TO_UUID(users.user_id) user_id, 
+                        users.first_name, 
+                        users.last_name, 
+                        users.username, 
+                        users.profile_pic_url, 
+                        users.profile_background_url, 
+                        users.date_created,
+                        (SELECT COUNT(*) FROM followers WHERE followers.followee_id = users.user_id) AS followerCount,
+                        (SELECT COUNT(*) FROM followers WHERE followers.follower_id = users.user_id) AS followingCount
+                        FROM users 
+                        WHERE BIN_TO_UUID(users.user_id) = ?`,
+                    [profile_id]
+                )
+                if(user[0]) return JSON.parse(JSON.stringify(user[0]))
+                return {error: 'User not found'}
+            }
+            catch(error){
+                return {error: 'Error fetching user info'}
+            }
+        }
     }
 
     static async uploadPost({input}:uploadPostInput){
@@ -423,27 +461,39 @@ export class AppModel{
     }
 
     static async getFollowing({input}:{input:string}){
-        const [following] = await connection.query<mysql.RowDataPacket[]>(
-            `SELECT BIN_TO_UUID(followee_id) followee_id, users.username, users.profile_pic_url
-             FROM followers
-             JOIN users ON followers.followee_id = users.user_id
-             WHERE followers.follower_id = UUID_TO_BIN(?)`,
-            [input]
-        )
-        if(following) return JSON.parse(JSON.stringify(following))
-        return {error: 'No following found'}
+        try{
+            const [following] = await connection.query<mysql.RowDataPacket[]>(
+                `SELECT BIN_TO_UUID(followee_id) followee_id, users.username, users.profile_pic_url
+                 FROM followers
+                 JOIN users ON followers.followee_id = users.user_id
+                 WHERE followers.follower_id = UUID_TO_BIN(?)`,
+                [input]
+            )
+            if(following) return JSON.parse(JSON.stringify(following))
+            return {error: 'No following found'}
+        }
+        catch(error){
+            console.error(error)
+            return {error: 'Error getting following'}
+        }
     }
 
     static async getFollowers({input}:{input:string}){
-        const [followers] = await connection.query<mysql.RowDataPacket[]>(
-            `SELECT BIN_TO_UUID(follower_id) follower_id, users.username, users.profile_pic_url
-             FROM followers
-             JOIN users ON followers.follower_id = users.user_id
-             WHERE followers.followee_id = UUID_TO_BIN(?)`,
-            [input]
-        )
-        if(followers) return JSON.parse(JSON.stringify(followers))
-        return {error: 'No followers found'}
+        try{
+            const [followers] = await connection.query<mysql.RowDataPacket[]>(
+                `SELECT BIN_TO_UUID(follower_id) follower_id, users.username, users.profile_pic_url
+                 FROM followers
+                 JOIN users ON followers.follower_id = users.user_id
+                 WHERE followers.followee_id = UUID_TO_BIN(?)`,
+                [input]
+            )
+            if(followers) return JSON.parse(JSON.stringify(followers))
+            return {error: 'No followers found'}
+        }
+        catch(error){
+            console.error(error)
+            return {error: 'Error getting followers'}
+        }
     }
 
     static async postComment({input}:postCommmentInput){
