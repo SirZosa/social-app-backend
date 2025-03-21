@@ -19,5 +19,6 @@ export type UserModel={
         getFollowing:Function,
         getFollowers:Function,
         getUserInfo:Function,
-        getPostById:Function
+        getPostById:Function,
+        getProfilePosts:Function
 }

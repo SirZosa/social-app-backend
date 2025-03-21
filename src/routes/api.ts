@@ -13,6 +13,7 @@ export const createRouter = ({ UserModel }: { UserModel: UserModel }) => {
     apiRouter.post("/signup", userController.signUp);
 
     apiRouter.get("/profile/:profile_id", partialAuthenticate, userController.getProfile);
+    apiRouter.get("/profile/:profile_id/posts", partialAuthenticate, userController.getProfilePosts);
 
     apiRouter.get("/posts", partialAuthenticate,userController.getPosts);
     apiRouter.post("/posts", authenticate, userController.uploadPost);

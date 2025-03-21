@@ -67,6 +67,27 @@ export class UserController{
         res.status(200).json(userData)
     }
 
+    getProfilePosts = async(req:Request, res:Response)=>{
+        const profile_id = req.params.profile_id
+        const user_id = req.body.user.id
+
+        if(!req.query.page){
+            res.status(400).json({message:'Page is required'})
+            return
+        }
+        const pageNum = parseInt(req.query.page as string)
+        if(!profile_id){
+            res.status(400).json({message:'Profile id is required'})
+            return
+        }
+        const posts = await this.UserModel.getProfilePosts({input:{profile_id, user_id, pageNum}})
+        if(posts.error){
+            res.status(404).json({message:'User not found'})
+            return
+        }
+        res.status(200).json(posts)
+    }
+
     uploadPost = async(req:Request, res:Response)=>{
         const result = validatePost(req.body)
         const user_id = req.body.user.id

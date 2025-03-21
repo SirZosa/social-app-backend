@@ -143,6 +143,89 @@ export class AppModel{
         }
     }
 
+    static async getProfilePosts({input}: { input: { pageNum: number, profile_id: string, user_id: { "type": "Buffer", "data": Array<number> } | undefined } }) {
+        const { pageNum, profile_id, user_id } = input;
+        const offset = (pageNum - 1) * 10;
+        if(user_id){
+            const hexString = Buffer.from(user_id.data).toString('hex')
+            try {
+                const [posts] = await connection.query<mysql.RowDataPacket[]>(
+                    `SELECT 
+                        BIN_TO_UUID(p.post_id) AS post_id, 
+                        BIN_TO_UUID(p.user_id) AS user_id, 
+                        p.content, 
+                        p.media_url, 
+                        p.date_created,
+                        u.username,
+                        u.profile_pic_url,
+                        COUNT(DISTINCT l.like_id) AS like_count,
+                        COUNT(DISTINCT c.comment_id) AS comment_count,
+                        EXISTS (
+                            SELECT 1 
+                            FROM likes 
+                            WHERE likes.post_id = p.post_id 
+                            AND likes.user_id = UUID_TO_BIN(?)
+                        ) AS is_liked,
+                        EXISTS (
+                            SELECT 1 
+                            FROM saved_posts 
+                            WHERE saved_posts.post_id = p.post_id 
+                            AND saved_posts.user_id = UUID_TO_BIN(?)
+                        ) AS is_saved
+                    FROM posts p
+                    JOIN users u ON p.user_id = u.user_id
+                    LEFT JOIN likes l ON p.post_id = l.post_id
+                    LEFT JOIN comments c ON p.post_id = c.post_id
+                    WHERE p.user_id = UUID_TO_BIN(?)
+                    GROUP BY p.post_id
+                    ORDER BY p.date_created DESC
+                    LIMIT ? OFFSET ?;`,
+                    [hexString, hexString, profile_id, 10, offset]
+                );
+                if (posts.length > 0) {
+                    return { posts: JSON.parse(JSON.stringify(posts)), hasMore: true };
+                }
+                return { posts: [], hasMore: false };
+            } catch (error) {
+                console.log(error)
+                return { error: 'Error fetching profile posts' };
+            }
+        }
+        else{
+            try{
+                const [posts] = await connection.query<mysql.RowDataPacket[]>(
+                    `SELECT 
+                        BIN_TO_UUID(p.post_id) AS post_id, 
+                        BIN_TO_UUID(p.user_id) AS user_id, 
+                        p.content, 
+                        p.media_url, 
+                        p.date_created,
+                        u.username,
+                        u.profile_pic_url,
+                        COUNT(DISTINCT l.like_id) AS like_count,
+                        COUNT(DISTINCT c.comment_id) AS comment_count
+                    FROM posts p
+                    JOIN users u ON p.user_id = u.user_id
+                    LEFT JOIN likes l ON p.post_id = l.post_id
+                    LEFT JOIN comments c ON p.post_id = c.post_id
+                    WHERE p.user_id = UUID_TO_BIN(?)
+                    GROUP BY p.post_id
+                    ORDER BY p.date_created DESC
+                    LIMIT ? OFFSET ?;`,
+                    [profile_id, 10, offset]
+                );
+        
+                if (posts.length > 0) {
+                    return { posts: JSON.parse(JSON.stringify(posts)), hasMore: true };
+                }
+                return { posts: [], hasMore: false };
+            }
+            catch (error) {
+                return { error: 'Error fetching profile posts' };
+            }
+        }
+    }
+
     static async uploadPost({input}:uploadPostInput){
         const {user_id, content, media_url} = input
         const hexString = Buffer.from(user_id.data).toString('hex');
