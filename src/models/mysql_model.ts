@@ -360,10 +360,11 @@ export class AppModel{
                     [post_id]
                 );
                 if (posts.length > 0) {
-                    return JSON.parse(JSON.stringify(posts));
+                    return JSON.parse(JSON.stringify(posts[0]));
                 }
                 return [];
             } catch (error) {
+                console.error(error)
                 return { error: 'Error fetching posts' };
             }
         }
