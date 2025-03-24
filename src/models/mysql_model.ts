@@ -701,7 +701,6 @@ export class AppModel{
     static async deleteComment({input}:{input:{comment_id:string, user_id:{type:"Buffer",data:Array<number>}}}){
         const {comment_id, user_id} = input
         const hexString = Buffer.from(user_id.data).toString('hex');
-        console.log(comment_id, hexString)
         try{
             const [result] = await connection.query<ResultSetHeader>(
                 'DELETE FROM comments WHERE BIN_TO_UUID(comment_id) = ? AND user_id = UNHEX(?)',
