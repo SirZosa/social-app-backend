@@ -17,7 +17,7 @@ export const createRouter = ({ UserModel }: { UserModel: UserModel }) => {
 
     apiRouter.get("/posts", partialAuthenticate,userController.getPosts);
     apiRouter.post("/posts", authenticate, userController.uploadPost);
-    apiRouter.delete("/posts", authenticate, userController.deletePost);
+    apiRouter.delete("/posts/:post_id", authenticate, userController.deletePost);
     apiRouter.get("/post/:post_id", partialAuthenticate, userController.getPostById);
     apiRouter.get("/posts/following", authenticate, userController.getFolloweePosts);
     apiRouter.get("/posts/saved", authenticate, userController.getSavedPosts);
@@ -26,7 +26,7 @@ export const createRouter = ({ UserModel }: { UserModel: UserModel }) => {
     apiRouter.delete("/like", authenticate, userController.removeLike);
 
     apiRouter.post("/comment", authenticate, userController.postComment);
-    apiRouter.delete("/comment", authenticate, userController.deleteComment);
+    apiRouter.delete("/comment/:comment_id", authenticate, userController.deleteComment);
     apiRouter.get("/comment/:post_id", userController.getComments);
 
     apiRouter.post("/follow", authenticate, userController.follow);

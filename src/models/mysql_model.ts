@@ -693,12 +693,13 @@ export class AppModel{
         }
     }
 
-    static async deleteComment({input}:{input:{comment_id:string}}){
-        const {comment_id} = input
+    static async deleteComment({input}:{input:{comment_id:string, user_id:{type:"Buffer",data:Array<number>}}}){
+        const {comment_id, user_id} = input
+        const hexString = Buffer.from(user_id.data).toString('hex');
         try{
             await connection.query(
-                'DELETE FROM comments WHERE BIN_TO_UUID(comment_id) = ?',
-                [comment_id]
+                'DELETE FROM comments WHERE BIN_TO_UUID(comment_id) = ? AND BIN_TO_UUID(user_id) = UNHEX(?)',
+                [comment_id, hexString]
             )
             return {message:'Comment deleted'}
         }

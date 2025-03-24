@@ -109,7 +109,7 @@ export class UserController{
     }
 
     deletePost = async(req:Request, res:Response)=>{
-        const {post_id} = req.body
+        const {post_id} = req.params
         const user_id = req.body.user.id
         if(!post_id){
             res.status(400).json({message:'Post id is required'})
@@ -348,7 +348,7 @@ export class UserController{
     }
 
     deleteComment = async(req:Request, res:Response)=>{
-        const {comment_id} = req.body
+        const {comment_id} = req.params
         const user_id = req.body.user.id
         if(!comment_id){
             res.status(400).json({message:'Comment id is required'})
@@ -358,7 +358,7 @@ export class UserController{
             res.status(400).json({message:'User id is required'})
             return
         }
-        const comment = await this.UserModel.deleteComment({input:{comment_id}})
+        const comment = await this.UserModel.deleteComment({input:{comment_id, user_id}})
         if(comment.error){
             res.status(409).json({message:'Error deleting comment'})
             return
