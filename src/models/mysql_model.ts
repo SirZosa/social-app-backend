@@ -1,4 +1,4 @@
-import mysql from 'mysql2/promise'
+import mysql, { Connection, ResultSetHeader } from 'mysql2/promise'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import 'dotenv/config'
@@ -220,7 +220,7 @@ export class AppModel{
                 }
                 return { posts: [], hasMore: false };
             }
-            catch (error) {
+            catch(error){
                 return { error: 'Error fetching profile posts' };
             }
         }
@@ -246,11 +246,16 @@ export class AppModel{
         const {post_id, user_id} = input
         const hexString = Buffer.from(user_id.data).toString('hex');
         try{
-            await connection.query(
+            const [result] = await connection.query<ResultSetHeader>(
                 'DELETE FROM posts WHERE BIN_TO_UUID(post_id) = ? AND user_id = UNHEX(?)',
                 [post_id, hexString]
             )
-            return {message:'Post deleted'}
+            
+            if (result.affectedRows > 0) {
+                return {message: 'Post deleted successfully'}
+            } else {
+                return {error: 'Post not found or you do not have permission to delete it'}
+            }
         }
         catch(error){
             return {error: 'Error deleting post'}
@@ -696,12 +701,17 @@ export class AppModel{
     static async deleteComment({input}:{input:{comment_id:string, user_id:{type:"Buffer",data:Array<number>}}}){
         const {comment_id, user_id} = input
         const hexString = Buffer.from(user_id.data).toString('hex');
+        console.log(comment_id, hexString)
         try{
-            await connection.query(
-                'DELETE FROM comments WHERE BIN_TO_UUID(comment_id) = ? AND BIN_TO_UUID(user_id) = UNHEX(?)',
+            const [result] = await connection.query<ResultSetHeader>(
+                'DELETE FROM comments WHERE BIN_TO_UUID(comment_id) = ? AND user_id = UNHEX(?)',
                 [comment_id, hexString]
             )
-            return {message:'Comment deleted'}
+            if (result.affectedRows > 0) {
+                return {message: 'Comment deleted successfully'}
+            } else {
+                return {error: 'Comment not found or you do not have permission to delete it'}
+            }
         }
         catch(error){
             return {error: 'Error deleting comment'}
