@@ -86,3 +86,11 @@ export interface getSavedPostsInput{
         "page":number
     }
 }
+
+export interface getFollowersInput{
+    input:{
+        "profile_id":string,
+        "user_id":{"type":"Buffer","data":Array<number>},
+        "page":number
+    }
+}

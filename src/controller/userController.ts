@@ -243,13 +243,41 @@ export class UserController{
         res.status(201).json({message:'User unfollowed'})
     }
 
-    getFollowing = async(req:Request, res:Response)=>{
-        const user_id = req.params.user_id
+    removeFollower = async(req:Request, res:Response)=>{
+        const {followee_id} = req.body
+        const user_id = req.body.user.id
+        if(!followee_id){
+            res.status(400).json({message:'Followee id is required'})
+            return
+        }
         if(!user_id){
             res.status(400).json({message:'User id is required'})
             return
         }
-        const following = await this.UserModel.getFollowing({input:user_id})
+        const unfollow = await this.UserModel.removeFollower({input:{followee_id, user_id}})
+        if(unfollow.error){
+            res.status(409).json({message:'Error removing follower'})
+            return
+        }
+        res.status(201).json({message:'User unfollowed'})
+    }
+
+    getFollowing = async(req:Request, res:Response)=>{
+        const profile_id = req.params.user_id
+        let user_id = req.body.user.id
+        const page = parseInt(req.query.page as string)
+        if(!user_id){
+            user_id = undefined
+        }
+        if(!page){
+            res.status(400).json({message:'Page is required'})
+            return
+        }
+        if(!profile_id){
+            res.status(400).json({message:'User id is required'})
+            return
+        }
+        const following = await this.UserModel.getFollowing({input:{profile_id, page, user_id}})
         if(following.error){
             res.status(404).json({message:'Following not found'})
             return
@@ -258,12 +286,21 @@ export class UserController{
     }
 
     getFollowers = async(req:Request, res:Response)=>{
-        const user_id = req.params.user_id
+        const profile_id = req.params.user_id
+        let user_id = req.body.user.id
+        const page = parseInt(req.query.page as string)
         if(!user_id){
+            user_id = undefined
+        }
+        if(!page){
+            res.status(400).json({message:'Page is required'})
+            return
+        }
+        if(!profile_id){
             res.status(400).json({message:'User id is required'})
             return
         }
-        const followers = await this.UserModel.getFollowers({input:user_id})
+        const followers = await this.UserModel.getFollowers({input:{profile_id, page, user_id}})
         if(followers.error){
             res.status(404).json({message:'Followers not found'})
             return

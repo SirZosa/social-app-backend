@@ -31,12 +31,13 @@ export const createRouter = ({ UserModel }: { UserModel: UserModel }) => {
 
     apiRouter.post("/follow", authenticate, userController.follow);
     apiRouter.delete("/follow", authenticate, userController.unfollow);
+    apiRouter.delete("/removeFollower", authenticate, userController.removeFollower);
 
     apiRouter.post("/savepost", authenticate, userController.savePost);
     apiRouter.delete("/savepost", authenticate, userController.unsavePost);
 
-    apiRouter.get("/following/:user_id", userController.getFollowing);
-    apiRouter.get("/followers/:user_id", userController.getFollowers);
+    apiRouter.get("/following/:user_id", partialAuthenticate, userController.getFollowing);
+    apiRouter.get("/followers/:user_id", partialAuthenticate, userController.getFollowers);
 
     apiRouter.get("/user", authenticate, userController.getUserInfo);
     return apiRouter;

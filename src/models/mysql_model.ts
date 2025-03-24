@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import 'dotenv/config'
 import { ConnectionOptions } from 'mysql2/promise'
-import { logInInput, signUpInput, getProfileInput, uploadPostInput, postLikeInput, getFolloweesPostsInput, postCommmentInput, getCommentsInput, deletePostInput, followInput, savePostInput, getSavedPostsInput } from './interfaces'
+import { logInInput, signUpInput, getProfileInput, uploadPostInput, postLikeInput, getFolloweesPostsInput, postCommmentInput, getCommentsInput, deletePostInput, followInput, savePostInput, getSavedPostsInput, getFollowersInput } from './interfaces'
 
 const config:ConnectionOptions ={
     host: process.env.DB_HOST,
@@ -544,39 +544,136 @@ export class AppModel{
         }
     }
 
-    static async getFollowing({input}:{input:string}){
+    static async removeFollower({input}:followInput){
+        const {followee_id, user_id} = input
+        const hexString = Buffer.from(user_id.data).toString('hex');
         try{
-            const [following] = await connection.query<mysql.RowDataPacket[]>(
-                `SELECT BIN_TO_UUID(followee_id) followee_id, users.username, users.profile_pic_url
-                 FROM followers
-                 JOIN users ON followers.followee_id = users.user_id
-                 WHERE followers.follower_id = UUID_TO_BIN(?)`,
-                [input]
+            await connection.query(
+                'DELETE FROM followers WHERE follower_id = UUID_TO_BIN(?) AND followee_id = UNHEX(?)',
+                [followee_id, hexString]
             )
-            if(following) return JSON.parse(JSON.stringify(following))
-            return {error: 'No following found'}
+            return {message:'User unfollowed'}
         }
         catch(error){
             console.error(error)
-            return {error: 'Error getting following'}
+            return {error: 'Error unfollowing user'}
         }
     }
 
-    static async getFollowers({input}:{input:string}){
-        try{
-            const [followers] = await connection.query<mysql.RowDataPacket[]>(
-                `SELECT BIN_TO_UUID(follower_id) follower_id, users.username, users.profile_pic_url
-                 FROM followers
-                 JOIN users ON followers.follower_id = users.user_id
-                 WHERE followers.followee_id = UUID_TO_BIN(?)`,
-                [input]
-            )
-            if(followers) return JSON.parse(JSON.stringify(followers))
-            return {error: 'No followers found'}
+    static async getFollowing({input}: getFollowersInput) {
+        const { page, profile_id, user_id } = input;
+        const offset = (page - 1) * 10;
+        if(user_id){
+            const hexString = user_id ? Buffer.from(user_id.data).toString('hex') : null;
+        
+            try {
+                const [following] = await connection.query<mysql.RowDataPacket[]>(
+                    `SELECT 
+                        BIN_TO_UUID(u.user_id) AS user_id, 
+                        u.username, 
+                        u.profile_pic_url,
+                        EXISTS (
+                            SELECT 1 
+                            FROM followers 
+                            WHERE followers.follower_id = UUID_TO_BIN(?) 
+                            AND followers.followee_id = u.user_id
+                        ) AS is_following
+                    FROM users u
+                    JOIN followers f ON u.user_id = f.followee_id
+                    WHERE f.follower_id = UUID_TO_BIN(?)
+                    ORDER BY f.date_created DESC
+                    LIMIT ? OFFSET ?;`,
+                    [hexString, profile_id, 10, offset]
+                );
+        
+                if (following.length > 0) {
+                    return { following: JSON.parse(JSON.stringify(following)), hasMore: true };
+                }
+                return { following: [], hasMore: false };
+            } catch (error) {
+                return { error: 'Error fetching following' };
+            }
         }
-        catch(error){
-            console.error(error)
-            return {error: 'Error getting followers'}
+        else{
+            try {
+                const [following] = await connection.query<mysql.RowDataPacket[]>(
+                    `SELECT 
+                        BIN_TO_UUID(u.user_id) AS user_id, 
+                        u.username, 
+                        u.profile_pic_url
+                    FROM users u
+                    JOIN followers f ON u.user_id = f.followee_id
+                    WHERE f.follower_id = UUID_TO_BIN(?)
+                    ORDER BY f.date_created DESC
+                    LIMIT ? OFFSET ?;`,
+                    [profile_id, 10, offset]
+                );
+        
+                if (following.length > 0) {
+                    return { following: JSON.parse(JSON.stringify(following)), hasMore: true };
+                }
+                return { following: [], hasMore: false };
+            } catch (error) {
+                return { error: 'Error fetching following' };
+            }
+        }
+    }
+
+    static async getFollowers({input}: getFollowersInput) {
+        const { page, profile_id, user_id } = input;
+        const offset = (page - 1) * 10;
+        if(user_id){
+            const hexString = user_id ? Buffer.from(user_id.data).toString('hex') : null;
+            try {
+                const [followers] = await connection.query<mysql.RowDataPacket[]>(
+                    `SELECT 
+                        BIN_TO_UUID(u.user_id) AS user_id, 
+                        u.username, 
+                        u.profile_pic_url,
+                        EXISTS (
+                            SELECT 1 
+                            FROM followers 
+                            WHERE followers.follower_id = UUID_TO_BIN(?) 
+                            AND followers.followee_id = u.user_id
+                        ) AS is_following
+                    FROM users u
+                    JOIN followers f ON u.user_id = f.follower_id
+                    WHERE f.followee_id = UUID_TO_BIN(?)
+                    ORDER BY f.date_created DESC
+                    LIMIT ? OFFSET ?;`,
+                    [hexString, profile_id, 10, offset]
+                );
+        
+                if (followers.length > 0) {
+                    return { followers: JSON.parse(JSON.stringify(followers)), hasMore: true };
+                }
+                return { followers: [], hasMore: false };
+            } catch (error) {
+                return { error: 'Error fetching followers' };
+            }
+        }
+        else{
+            try {
+                const [followers] = await connection.query<mysql.RowDataPacket[]>(
+                    `SELECT 
+                        BIN_TO_UUID(u.user_id) AS user_id, 
+                        u.username, 
+                        u.profile_pic_url
+                    FROM users u
+                    JOIN followers f ON u.user_id = f.follower_id
+                    WHERE f.followee_id = UUID_TO_BIN(?)
+                    ORDER BY f.date_created DESC
+                    LIMIT ? OFFSET ?;`,
+                    [profile_id, 10, offset]
+                );
+        
+                if (followers.length > 0) {
+                    return { followers: JSON.parse(JSON.stringify(followers)), hasMore: true };
+                }
+                return { followers: [], hasMore: false };
+            } catch (error) {
+                return { error: 'Error fetching followers' };
+            }
         }
     }
 
