@@ -9,7 +9,8 @@
     "dev": "nodemon --exec node --loader ts-node/esm src/server/mysql.ts",
     "build": "tsc",
     "lint": "eslint . --ext .ts",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "deploy:prod": "npm run build && node dist/server/mysql.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
