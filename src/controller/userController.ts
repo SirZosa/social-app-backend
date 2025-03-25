@@ -1,6 +1,7 @@
 import { UserModel } from "./interfaces.js"
 import { validatePartialUser, validateUser, validateComment, validatePost } from "../validations/userValidation.js"
 import { Request, Response } from "express"
+import 'dotenv/config'
 
 export class UserController{
     private UserModel:UserModel
