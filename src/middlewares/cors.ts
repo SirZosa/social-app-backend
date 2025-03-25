@@ -1,11 +1,8 @@
 import cors from 'cors';
 
 const ACCEPTED_ORIGINS = [
-  'http://localhost:8080',
-  'http://localhost:3000',
   'http://localhost:5173',
-  'http://localhost:5174',
-  'http://localhost:5175'
+  'https://omars-social-apps.netlify.app'
 ];
 
 export const corsMiddleware = ({ acceptedOrigins = ACCEPTED_ORIGINS } = {}) =>
