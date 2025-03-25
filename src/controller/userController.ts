@@ -466,7 +466,14 @@ export class UserController{
 
     logOut = async(req:Request, res:Response)=>{
         try{
-            res.clearCookie('token')
+            res.clearCookie('token', {
+                // Must match exactly how you set the cookie
+                secure: true, // Must match login cookie setting
+                sameSite: 'none', // Must match login cookie setting
+                domain: 'social-app-backend-xcpr.onrender.com', // Must match login cookie setting
+                path: '/',
+                httpOnly: true
+            });
             res.status(200).json({message:'Logged out'})
         }
         catch(error){
