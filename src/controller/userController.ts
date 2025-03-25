@@ -23,13 +23,11 @@ export class UserController{
         const {user_info, auth_token} = token
         res.cookie('token', auth_token, {
             httpOnly: true,
-            secure: process.env.NOD_ENV === 'production', // true in production
-            sameSite: process.env.NOD_ENV === 'production' ? 'none' : 'lax',
-            domain: process.env.NOD_ENV === 'production' 
-              ? '.netlify.app' 
-              : undefined, // Important for Netlify
+            secure: true, // REQUIRED for HTTPS
+            sameSite: 'none', // REQUIRED for cross-site cookies
+            domain: 'social-app-backend-xcpr.onrender.com', // Your exact backend domain
             path: '/',
-            maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
+            maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week expiration
           });
         res.status(200).json(user_info);
     }
