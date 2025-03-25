@@ -2,7 +2,8 @@ import cors from 'cors';
 
 const ACCEPTED_ORIGINS = [
   'http://localhost:5173',
-  'https://omars-social-apps.netlify.app'
+  'https://omars-social-apps.netlify.app',
+  'https://omars-social-apps.netlify.app/'
 ];
 
 export const corsMiddleware = ({ acceptedOrigins = ACCEPTED_ORIGINS } = {}) =>
@@ -22,4 +23,7 @@ export const corsMiddleware = ({ acceptedOrigins = ACCEPTED_ORIGINS } = {}) =>
       return callback(new Error('Not allowed by CORS'));
     },
     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    exposedHeaders: ['set-cookie'] // Important for cookies
   });

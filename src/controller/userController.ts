@@ -1,6 +1,7 @@
 import { UserModel } from "./interfaces.js"
 import { validatePartialUser, validateUser, validateComment, validatePost } from "../validations/userValidation.js"
 import { Request, Response } from "express"
+import 'dotenv/config'
 
 export class UserController{
     private UserModel:UserModel
@@ -20,7 +21,16 @@ export class UserController{
             return
         }
         const {user_info, auth_token} = token
-        res.cookie('token', auth_token, {httpOnly:true, sameSite:'lax'})
+        res.cookie('token', auth_token, {
+            httpOnly: true,
+            secure: process.env.NOD_ENV === 'production', // true in production
+            sameSite: process.env.NOD_ENV === 'production' ? 'none' : 'lax',
+            domain: process.env.NOD_ENV === 'production' 
+              ? '.netlify.app' 
+              : undefined, // Important for Netlify
+            path: '/',
+            maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
+          });
         res.status(200).json(user_info);
     }
 
